@@ -40,6 +40,10 @@ class Aes
             throw new KoveyException(openssl_error_string());
         }
 
+        if ($isBase64) {
+            return base64_encode($result);
+        }
+
         return $result;
     }
 

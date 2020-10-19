@@ -13,7 +13,7 @@ namespace Kovey\Library\Jwt;
 
 use Kovey\Library\Util\Json;
 use Kovey\Library\Encryption\Aes;
-use Kovey\Library\TokenExpiredException;
+use Kovey\Library\Exception\TokenExpiredException;
 
 class Jwt 
 {
@@ -105,7 +105,7 @@ class Jwt
     {
         $tokens = explode('.', $token);
         if (count($tokens) != 3) {
-            throw new TokenExpiredException('TOKEN_EXPIRED');
+            throw new TokenExpiredException('token format error');
         }
 
         list($base64header, $base64payload, $sign) = $tokens;
@@ -113,11 +113,11 @@ class Jwt
         $base64decodeheader = Json::decode($this->base64UrlDecode($base64header));
 
         if (empty($base64decodeheader['alg'])) {
-            throw new TokenExpiredException('TOKEN_EXPIRED');
+            throw new TokenExpiredException('alg is empty');
         }
 
         if ($this->signature($base64header . '.' . $base64payload, $this->key, $base64decodeheader['alg']) !== $sign) {
-            throw new TokenExpiredException('TOKEN_EXPIRED');
+            throw new TokenExpiredException('sign error');
         }
 
         $payload = Json::decode($this->base64UrlDecode($base64payload));
@@ -125,13 +125,13 @@ class Jwt
         if (empty($payload['iat'])
             || $payload['iat'] > time()
         ) {
-            throw new TokenExpiredException('TOKEN_EXPIRED');
+            throw new TokenExpiredException('iat is error');
         }
 
         if (empty($payload['exp'])
             || $payload['exp'] < time()
         ) {
-            throw new TokenExpiredException('TOKEN_EXPIRED');
+            throw new TokenExpiredException('token expired');
         }
 
         return $payload['ext'] ?? array();

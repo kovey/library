@@ -9,9 +9,7 @@
  *
  * @author      kovey
  */
-namespace Kovey\Rpc\Protocol;
-
-use Kovey\Library\Exception\KoveyException;
+namespace Kovey\Library\Exception;
 
 class ProtocolException extends KoveyException
 {

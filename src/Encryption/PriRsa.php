@@ -34,8 +34,14 @@ class PriRsa
             $key = 'file://' . $key;
         }
 
-        if (!openssl_private_encrypt($data, $crypted, $key)) {
-            throw new KoveyException(openssl_error_string());
+        try {
+            if (!openssl_private_encrypt($data, $crypted, $key)) {
+                throw new KoveyException(openssl_error_string());
+            }
+        } catch (KoveyException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            throw new KoveyException($e->getMessage());
         }
 
         if (!$isBase64) {
@@ -68,8 +74,14 @@ class PriRsa
             $encrypt = base64_decode($encrypt);
         }
 
-        if (!openssl_private_decrypt($encrypt, $decrypted, $key)) {
-            throw new KoveyException(openssl_error_string());
+        try {
+            if (!openssl_private_decrypt($encrypt, $decrypted, $key)) {
+                throw new KoveyException(openssl_error_string());
+            }
+        } catch (KoveyException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            throw new KoveyException($e->getMessage());
         }
 
         return $decrypted;

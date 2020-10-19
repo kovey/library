@@ -65,7 +65,7 @@ class Container implements ContainerInterface
 	/**
 	 * @description bind
 	 *
-	 * @param ReflectionClass $class
+	 * @param ReflectionClass | ReflectionAttribute $class
 	 *
 	 * @param Array $dependencies
 	 *
@@ -73,7 +73,7 @@ class Container implements ContainerInterface
 	 *
 	 * @return mixed
 	 */
-    private function bind(\ReflectionClass $class, Array $dependencies, Array $args = array())
+    private function bind(\ReflectionClass | \ReflectionAttribute $class, Array $dependencies, Array $args = array())
     {
 		$obj = null;
 		if (count($args) > 0) {
@@ -96,11 +96,11 @@ class Container implements ContainerInterface
 	/**
 	 * @description cache
 	 *
-	 * @param ReflectionClass $class
+	 * @param ReflectionClass | ReflectionAttribute $class
 	 *
 	 * @return null
 	 */
-    private function resolveMethod(\ReflectionClass $class)
+    private function resolveMethod(\ReflectionClass | \ReflectionAttribute $class)
     {
         $methods = $class->getMethods();
         foreach ($methods as $method) {
@@ -111,11 +111,11 @@ class Container implements ContainerInterface
 	/**
 	 * @description cache
 	 *
-	 * @param ReflectionClass $class
+	 * @param ReflectionClass | ReflectionAttribute $class
 	 *
 	 * @return null
 	 */
-    private function resolve(\ReflectionClass $class)
+    private function resolve(\ReflectionClass | \ReflectionAttribute $class)
     {
         $this->instances[$class->getName()] = $this->getAts($class);
         foreach ($this->instances[$class->getName()] as $deps) {
@@ -126,13 +126,19 @@ class Container implements ContainerInterface
 	/**
 	 * @description get all reject
 	 *
-	 * @param ReflectionClass $ref
+	 * @param ReflectionClass | ReflectionAttribute $ref
 	 *
 	 * @return Array
 	 */
-    private function getAts(\ReflectionClass $ref) : Array
+    private function getAts(\ReflectionClass | \ReflectionAttribute $ref) : Array
     {
-        $properties = $ref->getProperties();
+        $properties = null;
+        if ($ref instanceof \ReflectionAttribute) {
+            $refl = new \ReflectionClass($ref->getName());
+            $properties = $refl->getProperties();
+        } else {
+            $properties = $ref->getProperties();
+        }
         $ats = array();
         foreach ($properties as $property) {
 			$attrs = $property->getAttributes();

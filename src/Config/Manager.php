@@ -147,7 +147,7 @@ class Manager
 				continue;
 			}
 
-			$val = self::getValue($info, '=', 1);
+			$val = trim(self::getValue($info, '=', 1), '"');
 			$finalKey = $file . '.' . $areaKey . '.' . $key;
 			self::$values->set(md5($finalKey), array('v' => $val));
 			$areaKeys[] = $finalKey;
@@ -225,11 +225,11 @@ class Manager
 	 *
 	 * @param string $key
 	 *
-	 * @return string
+	 * @return string : Array
      *
      * @throws KoveyException
 	 */
-	public static function get(string $key) : string
+	public static function get(string $key) : string | Array
 	{
 		$val = self::$values->get(md5($key));
 		if ($val !== false) {
