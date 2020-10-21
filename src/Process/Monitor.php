@@ -13,8 +13,8 @@ namespace Kovey\Library\Process;
 
 use Kovey\Library\Config\Manager;
 use Kovey\Rpc\Client\Client;
-use Kovey\Components\Logger\Logger;
-use Kovey\Util\Json;
+use Kovey\Library\Logger\Logger;
+use Kovey\Library\Util\Json;
 use Swoole\Timer;
 
 class Monitor extends ProcessAbstract

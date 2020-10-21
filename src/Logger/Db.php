@@ -42,15 +42,17 @@ class Db
 	 *
 	 * @param float $spentTime
 	 */
-	public static function write(int $sql, float $spentTime)
+	public static function write(string $sql, float $spentTime)
 	{
-		$spentTime = round($spentTime * 1000, 2) . 'ms';
+        go (function ($sql, $spentTime) {
+            $spentTime = round($spentTime * 1000, 2) . 'ms';
 
-		$content = sprintf("Time: %s\nSql: %s\nSpent Time: %s\n", date('Y-m-d H:i:s'), $sql, $spentTime);
-		System::writeFile(
-			self::$logDir . '/' . date('Y-m-d') . '.log',
-			$content,
-			FILE_APPEND
-		);
+            $content = sprintf("Time: %s\nSql: %s\nSpent Time: %s\n", date('Y-m-d H:i:s'), $sql, $spentTime);
+            System::writeFile(
+                self::$logDir . '/' . date('Y-m-d') . '.log',
+                $content,
+                FILE_APPEND
+            );
+        }, $sql, $spentTime);
 	}
 }

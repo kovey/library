@@ -167,13 +167,13 @@ class Validator
      *
      * @param mixed $val
      *
-     * @param int $mixed
+     * @param int | float $limit
      *
      * @return bool
      */
-    public function gt($val, int $mixed) : bool
+    public function gt($val, int | float $limit) : bool
     {
-        return $val > $mixed;
+        return $val > $limit;
     }
 
     /**
@@ -181,13 +181,13 @@ class Validator
      *
      * @param mixed $val
      *
-     * @param int $mixed
+     * @param int | float $limit
      *
      * @return bool
      */
-    public function ge($val, int $mixed) : bool
+    public function ge($val, int | float $limit) : bool
     {
-        return $val >= $mixed;
+        return $val >= $limit;
     }
 
     /**
@@ -195,13 +195,13 @@ class Validator
      *
      * @param mixed $val
      *
-     * @param int $mixed
+     * @param int | float $limit
      *
      * @return bool
      */
-    public function lt($val,int $mixed) : bool
+    public function lt($val, int | float $limit) : bool
     {
-        return $val < $mixed;
+        return $val < $limit;
     }
 
     /**
@@ -209,13 +209,13 @@ class Validator
      *
      * @param mixed $val
      *
-     * @param int mixed
+     * @param int | float mixed
      *
      * @return bool
      */
-    public function le($val, int $mixed) : bool
+    public function le($val, int | float $limit) : bool
     {
-        return $val <= $mixed;
+        return $val <= $limit;
     }
 
     /**
@@ -263,17 +263,29 @@ class Validator
      */
     public function notEmpty($val) : bool
     {
+        if (is_null($val)) {
+            return false;
+        }
+
+        if (is_numeric($val)) {
+            return true;
+        }
+
+        if (is_bool($val)) {
+            return true;
+        }
+
         return !empty($val);
     }
 
     public function url($val) : bool
     {
-        return (bool)filter_var($val, FILTER_SANITIZE_URL);
+        return filter_var($val, FILTER_VALIDATE_URL) !== false;
     }
 
     public function account($val) : bool
     {
-        return (bool)preg_match('/^[a-zA-Z0-9_]+/', $val);
+        return (bool)preg_match('/^[a-zA-Z0-9_]+$/', $val);
     }
 
     public function equalLength($val, int $len) : bool
@@ -283,7 +295,7 @@ class Validator
 
     public function id($val) : bool
     {
-        return (bool)preg_match('/^[a-f0-9]+/', $val);
+        return (bool)preg_match('/^[a-f0-9]+$/', $val);
     }
 
 	public function date($date) : bool
@@ -403,12 +415,12 @@ class Validator
 
     public function email($data) : bool
     {
-        return (bool)preg_match("/^\w+((-\w+)|(\.\w+))*\@[A-Za-z0-9]+((\.|-)[A-Za-z0-9]+)*\.[A-Za-z0-9]+$/", $data);
+        return filter_var($data, FILTER_VALIDATE_EMAIL) !== false;
     }
 
     public function money($data)
     {
-        return (bool)preg_match('/^[0-9]+\.[0-9]{2}/', $data);
+        return (bool)preg_match('/^[0-9]+\.[0-9]{2}$/', $data);
     }
 
     public function numeric($data) : bool

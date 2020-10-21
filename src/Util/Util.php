@@ -126,20 +126,20 @@ class Util
 	 *
 	 * @param string $idCard
 	 *
-	 * @return string
+	 * @return string | null
 	 */
-	public static function getBirthday(string $idCard) : string
+	public static function getBirthday(string $idCard) : ?string
 	{
 		$year = substr($idCard, 6, 4);
-		if ($year === false) {
+		if (empty($year)) {
 			return null;
 		}
 		$month = substr($idCard, 10, 2);
-		if ($month === false) {
+		if (empty($month)) {
 			return null;
 		}
-		$day = substr($idCard, 10, 2);
-		if ($day === false) {
+		$day = substr($idCard, 12, 2);
+		if (empty($day)) {
 			return null;
 		}
 

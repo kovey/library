@@ -22,7 +22,7 @@ class Success extends Result
 	 */
     public static function getArray(Array $data = array()) : Array
     {
-        $res = new self(ErrorCode::SUCCESS, '成功', $data);
+        $res = new self(ErrorCode::SUCCESS, 'success', $data);
         return $res->toArray();
     }
 
@@ -35,7 +35,7 @@ class Success extends Result
 	 */
     public static function getJson(Array $data = array()) : string
     {
-        $res = new self(ErrorCode::SUCCESS, '成功', $data);
+        $res = new self(ErrorCode::SUCCESS, 'success', $data);
         return $res->toJson();
     }
 }

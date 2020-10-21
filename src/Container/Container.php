@@ -42,8 +42,8 @@ class Container implements ContainerInterface
 	 * @description get object
 	 *
 	 * @param string $class
-	 *
-	 * @param ...mixed $args
+     *
+     * @param ... $args
 	 *
 	 * @return mixed
 	 *
@@ -52,13 +52,15 @@ class Container implements ContainerInterface
     public function get(string $class, ...$args)
     {
         $class = new \ReflectionClass($class);
-
-        if (isset($this->instances[$class->getName()])) {
-            return $this->bind($class, $this->instances[$class->getName()], $args);
+        if (!isset($this->instances[$class->getName()])) {
+            $this->resolveMethod($class);
+            $this->resolve($class);
         }
 
-        $this->resolveMethod($class);
-        $this->resolve($class);
+        if (count($args) < 1) {
+            $args = $this->getMethodArguments($class->getName(), '__construct');
+        }
+
         return $this->bind($class, $this->instances[$class->getName()], $args);
     }
 
@@ -179,7 +181,7 @@ class Container implements ContainerInterface
         $attrs = $this->methods[$class . '::' . $method] ?? array();
         $result = array();
         foreach ($attrs as $attr) {
-            $result[] = $this->get($attr->getName());
+            $result[] = $this->get($attr->getName(), ...$attr->getArguments());
         }
 
         return $result;

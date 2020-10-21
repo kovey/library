@@ -10,10 +10,10 @@
  * @author      kovey
  */
 namespace Kovey\Library\Result;
-use Kovey\Util\Json;
-use Kovey\Config\Manager;
 
-class Result
+use Kovey\Library\Util\Json;
+
+abstract class Result
 {
 	/**
 	 * @description 错误码
