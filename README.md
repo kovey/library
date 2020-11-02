@@ -3,5 +3,5 @@
 ###### Library
 ###### Usage:
     - composer require kovey/library
-###### Run Test:
-    - /path/to/phpunit --bootstrap=/path/to/vendor/autoload.php /path/to/tests
+###### Run All Test:
+    - php /path/to/tests/test.php --bootstrap=/path/to/vendor/autoload.php /path/to/tests

@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": ">=8.0",
-        "ext-swoole": ">=4.4",
+        "ext-swoole": ">=4.5.5",
         "ext-json": ">=1.0"
     },
     "require-dev": {
@@ -27,6 +27,7 @@
     "autoload": {
         "psr-4": {
             "Kovey\\Library\\": "src/"
-        }
+        },
+        "files": ["src/kovey.php"]
     }
 }
