@@ -43,13 +43,15 @@ class Container implements ContainerInterface
 	 *
 	 * @param string $class
      *
+     * @param string $traceId
+     *
      * @param ... $args
 	 *
 	 * @return mixed
 	 *
 	 * @throws Throwable
 	 */
-    public function get(string $class, ...$args)
+    public function get(string $class, string $traceId, ...$args)
     {
         $class = new \ReflectionClass($class);
         if (!isset($this->instances[$class->getName()])) {
@@ -58,24 +60,26 @@ class Container implements ContainerInterface
         }
 
         if (count($args) < 1) {
-            $args = $this->getMethodArguments($class->getName(), '__construct');
+            $args = $this->getMethodArguments($class->getName(), '__construct', $traceId);
         }
 
-        return $this->bind($class, $this->instances[$class->getName()], $args);
+        return $this->bind($class, $traceId, $this->instances[$class->getName()], $args);
     }
 
 	/**
 	 * @description bind
 	 *
 	 * @param ReflectionClass | ReflectionAttribute $class
-	 *
+     *
+     * @param string $traceId
+     *
 	 * @param Array $dependencies
-	 *
+     *
 	 * @param Array $args
 	 *
 	 * @return mixed
 	 */
-    private function bind(\ReflectionClass | \ReflectionAttribute $class, Array $dependencies, Array $args = array())
+    private function bind(\ReflectionClass | \ReflectionAttribute $class, string $traceId, Array $dependencies, Array $args = array())
     {
 		$obj = null;
 		if (count($args) > 0) {
@@ -83,12 +87,14 @@ class Container implements ContainerInterface
 		} else {
 			$obj = $class->newInstance();
 		}
+
+        $obj->traceId = $traceId;
         if (count($dependencies) < 1) {
             return $obj;
         }
 
         foreach ($dependencies as $dependency) {
-            $dep = $this->bind($dependency['class'], $this->instances[$dependency['class']->getName()] ?? array());
+            $dep = $this->bind($dependency['class'], $traceId, $this->instances[$dependency['class']->getName()] ?? array());
             $dependency['property']->setValue($obj, $dep);
         }
 
@@ -174,14 +180,16 @@ class Container implements ContainerInterface
      *
      * @param string $method
      *
+     * @param string $traceId
+     *
      * @return Array
      */
-    public function getMethodArguments(string $class, string $method) : Array
+    public function getMethodArguments(string $class, string $method, string $traceId) : Array
     {
         $attrs = $this->methods[$class . '::' . $method] ?? array();
         $result = array();
         foreach ($attrs as $attr) {
-            $result[] = $this->get($attr->getName(), ...$attr->getArguments());
+            $result[] = $this->get($attr->getName(), $traceId, ...$attr->getArguments());
         }
 
         return $result;

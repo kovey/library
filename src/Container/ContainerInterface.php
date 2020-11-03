@@ -18,10 +18,12 @@ interface ContainerInterface
 	 * @description 获取实例
 	 *
 	 * @param string $class
+     *
+     * @param string $traceId
 	 *
 	 * @param ...mixed $args
 	 *
 	 * @return mixed
 	 */
-    public function get(string $class, ...$args);
+    public function get(string $class, string $traceId, ...$args);
 }

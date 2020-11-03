@@ -98,6 +98,13 @@ interface ProtocolInterface
 	 */
 	public function getClear() : string;
 
+    /**
+     * @description get traceId
+     *
+     * @return string
+     */
+    public function getTraceId() : string;
+
 	/**
 	 * @description 打包
 	 *

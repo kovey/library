@@ -26,44 +26,56 @@ class ContainerTest extends TestCase
 {
     public function testGet()
     {
+        $traceId = hash('sha256', '123456');
         $container = new Container();
-        $foo = $container->get('Kovey\Library\Container\Cases\Foo');
+        $foo = $container->get('Kovey\Library\Container\Cases\Foo', $traceId);
         $this->assertInstanceOf(Cases\Foo::class, $foo);
+        $this->assertEquals($traceId, $foo->traceId);
         $foo1 = $foo->getFoo1();
         $this->assertInstanceOf(Cases\Foo1::class, $foo1);
+        $this->assertEquals($traceId, $foo1->traceId);
         $foo2 = $foo1->getFoo2();
         $this->assertInstanceOf(Cases\Foo2::class, $foo2);
+        $this->assertEquals($traceId, $foo2->traceId);
         $this->assertEquals('this is test', $foo2->getName());
     }
 
     public function testGetFailure()
     {
+        $traceId = hash('sha256', '123456');
         $this->expectException(\ReflectionException::class);
         $container = new Container();
-        $foo = $container->get('Kovey\\NotExistsClass');
+        $foo = $container->get('Kovey\\NotExistsClass', $traceId);
     }
 
     public function testGetFailureWithNonAttributeClass()
     {
+        $traceId = hash('sha256', '123456');
         $this->expectException(\Error::class);
         $container = new Container();
-        $foo = $container->get('Kovey\\Library\\Container\\Cases\\Foo4');
+        $foo = $container->get('Kovey\\Library\\Container\\Cases\\Foo4', $traceId);
     }
 
     public function testGetConstructDefault()
     {
+        $traceId = hash('sha256', '123456');
         $container = new Container();
-        $foo5 = $container->get('Kovey\\Library\\Container\\Cases\\Foo5');
+        $foo5 = $container->get('Kovey\\Library\\Container\\Cases\\Foo5', $traceId);
         $this->assertInstanceOf(Cases\Foo5::class, $foo5);
+        $this->assertEquals($traceId, $foo5->traceId);
         $foo6 = $foo5->getFoo6();
         $this->assertInstanceOf(Cases\Foo6::class, $foo6);
+        $this->assertEquals($traceId, $foo6->traceId);
         $foo7 = $foo6->getFoo7();
         $this->assertInstanceOf(Cases\Foo7::class, $foo7);
+        $this->assertEquals($traceId, $foo7->traceId);
         $this->assertEquals('this is foo7', $foo7->getName());
         $foo1 = $foo7->getFoo1();
         $this->assertInstanceOf(Cases\Foo1::class, $foo1);
+        $this->assertEquals($traceId, $foo1->traceId);
         $foo2 = $foo1->getFoo2();
         $this->assertInstanceOf(Cases\Foo2::class, $foo2);
+        $this->assertEquals($traceId, $foo2->traceId);
         $this->assertEquals('this is test', $foo2->getName());
     }
 }
