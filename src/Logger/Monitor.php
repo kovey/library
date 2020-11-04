@@ -11,7 +11,6 @@
  */
 namespace Kovey\Library\Logger;
 
-use Swoole\Coroutine\System;
 use Kovey\Library\Util\Json;
 
 class Monitor
@@ -47,13 +46,13 @@ class Monitor
 	 */
 	public static function write(Array $content)
 	{
-		go (function () use ($content) {
+		go (function (Array $content) {
 			$content = Json::encode($content);
-			System::writeFile(
+			file_put_contents(
 				self::$logDir . '/' . date('Y-m-d') . '.log',
-				$content . "\n",
+				$content . PHP_EOL,
 				FILE_APPEND
 			);
-		});
+		}, $content);
 	}
 }

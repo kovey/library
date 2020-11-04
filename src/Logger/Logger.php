@@ -11,7 +11,6 @@
  */
 namespace Kovey\Library\Logger;
 
-use Swoole\Coroutine\System;
 use Kovey\Library\Util\Json;
 
 class Logger
@@ -49,7 +48,7 @@ class Logger
      *
      * @var string
      */
-    private static string $category;
+    private static string $category = '';
 
 	/**
 	 * @description 设置日志路径
@@ -94,20 +93,29 @@ class Logger
 	 *
 	 * @param string $file
 	 *
-	 * @param mixed $msg
+	 * @param string | Array $msg
 	 *
 	 * @return void
 	 */
-    public static function writeInfoLog(string $line, string $file, string $msg)
+    public static function writeInfoLog(int $line, string $file, string | Array $msg, string $traceId = '')
     {
-		go (function ($line, $file, $msg) {
-			$content = sprintf("[%s][%s][Info Log]\r\nMessage: [%s]\r\nLine: [%s]\r\nFile: [%s]\r\n", self::$category, date('Y-m-d H:i:s'), is_array($msg) ? Json::encode($msg) : $msg, $line, $file);
-			System::writeFile(
+		go (function (int $line, string $file, string | Array $msg, string $traceId) {
+            $content = array(
+                'time' => date('Y-m-d H:i:s'),
+                'category' => self::$category,
+                'type' => 'Info',
+                'message' => $msg,
+                'trace' => '',
+                'line' => $line,
+                'file' => $file,
+                'traceId' => $traceId
+            );
+			file_put_contents(
 				self::$infoPath . '/' . date('Y-m-d') . '.log',
-				$content,
+				Json::encode($content) . PHP_EOL,
 				FILE_APPEND
 			);
-		}, $line, $file, $msg);
+		}, $line, $file, $msg, $traceId);
     }
 
 	/**
@@ -117,20 +125,29 @@ class Logger
 	 *
 	 * @param string $file
 	 *
-	 * @param mixed $msg
+	 * @param string | Array $msg
 	 *
 	 * @return void
 	 */
-    public static function writeErrorLog(string $line, string $file, string $msg)
+    public static function writeErrorLog(int $line, string $file, string | Array $msg, string $traceId = '')
     {
-		go (function ($line, $file, $msg) {
-			$content = sprintf("[%s][%s][Error Log]\r\nMessage: [%s]\r\nLine: [%s]\r\nFile: [%s]\r\n", self::$category, date('Y-m-d H:i:s'), is_array($msg) ? Json::encode($msg) : $msg, $line, $file);
-			System::writeFile(
+		go (function (int $line, string $file, string | Array $msg, string $traceId) {
+            $content = array(
+                'time' => date('Y-m-d H:i:s'),
+                'category' => self::$category,
+                'type' => 'Error',
+                'message' => $msg,
+                'trace' => '',
+                'line' => $line,
+                'file' => $file,
+                'traceId' => $traceId
+            );
+			file_put_contents(
 				self::$errorPath . '/' . date('Y-m-d') . '.log',
-				$content,
+				Json::encode($content) . PHP_EOL,
 				FILE_APPEND
 			);
-		}, $line, $file, $msg);
+		}, $line, $file, $msg, $traceId);
     }
 
 	/**
@@ -140,20 +157,31 @@ class Logger
 	 *
 	 * @param string $file
 	 *
-	 * @param mixed $msg
+	 * @param string | Array $msg
+     *
+     * @param string $traceId
 	 *
 	 * @return void
 	 */
-    public static function writeWarningLog(int $line, string $file, string $msg)
+    public static function writeWarningLog(int $line, string $file, string | Array $msg, string $traceId = '')
     {
-		go (function ($line, $file, $msg) {
-			$content = sprintf("[%s][%s][Warning Log]\r\nMessage: [%s]\r\nLine: [%s]\r\nFile: [%s]\r\n", self::$category, date('Y-m-d H:i:s'), is_array($msg) ? Json::encode($msg) : $msg, $line, $file);
-			System::writeFile(
+        go (function (int $line, string $file, string | Array $msg, string $traceId) {
+            $content = array(
+                'time' => date('Y-m-d H:i:s'),
+                'category' => self::$category,
+                'type' => 'Warning',
+                'message' => $msg,
+                'trace' => '',
+                'line' => $line,
+                'file' => $file,
+                'traceId' => $traceId
+            );
+			file_put_contents(
 				self::$warningPath . '/' . date('Y-m-d') . '.log',
-				$content,
+				Json::encode($content) . PHP_EOL,
 				FILE_APPEND
 			);
-		}, $line, $file, $msg);
+		}, $line, $file, $msg, $traceId);
     }
 
 	/**
@@ -164,29 +192,30 @@ class Logger
 	 * @param string $file
 	 *
 	 * @param Array | Throwable $e
+     *
+     * @param string $traceId
 	 *
 	 * @return Array
 	 */
-    public static function writeExceptionLog(int $line, string $file, Array | \Throwable $e)
+    public static function writeExceptionLog(int $line, string $file, \Throwable $e, string $traceId = '')
     {
-		go (function ($line, $file, $e) {
-			if ($e instanceof \Throwable) {
-				$content = sprintf("[%s][%s][Exception Log]\r\nMessage: [%s]\r\nLine: [%s]\r\nFile: [%s]\r\nTrace:\r\n%s\r\n", self::$category, date('Y-m-d H:i:s'), $e->getMessage(), $line, $file, $e->getTraceAsString());
-				System::writeFile(
-					self::$exceptionPath . '/' . date('Y-m-d') . '.log',
-					$content,
-					FILE_APPEND
-				);
-				return;
-			}
-
-			$content = sprintf("[%s][%s][Exception Log]\r\nMessage: [%s]\r\nLine: [%s]\r\nFile: [%s]\r\nTrace:\r\n%s\r\n", self::$category, date('Y-m-d H:i:s'), $e['message'], $line, $file, $e['trace']);
-			System::writeFile(
-				self::$exceptionPath . '/' . date('Y-m-d') . '.log',
-				$content,
-				FILE_APPEND
-			);
-		}, $line, $file, $e);
+		go (function (int $line, string $file, \Throwable $e, string $traceId) {
+            $content = array(
+                'time' => date('Y-m-d H:i:s'),
+                'category' => self::$category,
+                'type' => 'Exception',
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'line' => $line,
+                'file' => $file,
+                'traceId' => $traceId
+            );
+            file_put_contents(
+                self::$exceptionPath . '/' . date('Y-m-d') . '.log',
+                Json::encode($content) . PHP_EOL,
+                FILE_APPEND
+            );
+		}, $line, $file, $e, $traceId);
     }
 
     /**

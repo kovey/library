@@ -11,7 +11,7 @@
  */
 namespace Kovey\Library\Logger;
 
-use Swoole\Coroutine\System;
+use Kovey\Library\Util\Json;
 
 class Db
 {
@@ -44,13 +44,16 @@ class Db
 	 */
 	public static function write(string $sql, float $spentTime)
 	{
-        go (function ($sql, $spentTime) {
+        go (function (string $sql, float $spentTime) {
             $spentTime = round($spentTime * 1000, 2) . 'ms';
-
-            $content = sprintf("Time: %s\nSql: %s\nSpent Time: %s\n", date('Y-m-d H:i:s'), $sql, $spentTime);
-            System::writeFile(
+            $content = array(
+                'time' => date('Y-m-d H:i:s'),
+                'sql' => $sql,
+                'delay'  => $spentTime
+            );
+            file_put_contents(
                 self::$logDir . '/' . date('Y-m-d') . '.log',
-                $content,
+                Json::encode($content) . PHP_EOL,
                 FILE_APPEND
             );
         }, $sql, $spentTime);

@@ -15,23 +15,22 @@ use PHPUnit\Framework\TestCase;
 use Kovey\Library\Util\Json;
 use Swoole\Coroutine\System;
 
-class DbTest extends TestCase
+class MonitorTest extends TestCase
 {
     public function testDbSetDir()
     {
-        Db::setLogDir(__DIR__ . '/log');
+        Monitor::setLogDir(__DIR__ . '/log');
         $this->assertTrue(is_dir(__DIR__ . '/log'));
     }
 
     public function testWrite()
     {
-        Db::setLogDir(__DIR__ . '/log');
-        Db::write('SELECT * FROM test Where id = 1', 0.0145);
+        Monitor::setLogDir(__DIR__ . '/log');
+        Monitor::write(array('kovey' => 'framework'));
         System::sleep(0.1);
         $this->assertFileExists(__DIR__ . '/log/' . date('Y-m-d') . '.log');
         $log = Json::decode(file_get_contents(__DIR__ . '/log/' . date('Y-m-d') . '.log'));
-        $this->assertEquals('SELECT * FROM test Where id = 1', $log['sql']);
-        $this->assertEquals('14.5ms', $log['delay']);
+        $this->assertEquals(array('kovey' => 'framework'), $log);
     }
 
     public static function tearDownAfterClass() : void
