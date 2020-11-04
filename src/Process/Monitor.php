@@ -13,7 +13,7 @@ namespace Kovey\Library\Process;
 
 use Kovey\Library\Config\Manager;
 use Kovey\Rpc\Client\Client;
-use Kovey\Library\Logger\Logger;
+use Kovey\Logger\Logger;
 use Kovey\Library\Util\Json;
 use Swoole\Timer;
 

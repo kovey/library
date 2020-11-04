@@ -11,8 +11,8 @@
  */
 namespace Kovey\Library\Process;
 
-use Kovey\Library\Logger\Logger;
 use Kovey\Library\Config\Manager;
+use Kovey\Logger\Logger;
 use Swoole\Timer;
 
 class Config extends ProcessAbstract
@@ -40,7 +40,7 @@ class Config extends ProcessAbstract
 
 		Timer::tick(Manager::get('server.sleep.config') * 1000, function () {
 			Manager::parse();
-			Logger::writeInfoLog(__LINE__, __FILE__, 'reload config');
+            Logger::writeInfoLog(__LINE__, __FILE__, 'reload config');
 		});
     }
 }
