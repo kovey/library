@@ -12,6 +12,7 @@
 namespace Kovey\Library\Server;
 
 use Swoole\Server;
+use Kovey\Library\Exception\KoveyException;
 
 abstract class Base implements PortInterface
 {
@@ -79,11 +80,11 @@ abstract class Base implements PortInterface
     public function on(string $event, $callable) : PortInterface
     {
         if (!$this->isAllow($event)) {
-            throw new \Exception('unknown event: ' . $event);
+            throw new KoveyException('unknown event: ' . $event);
         }
 
         if (!is_callable($callable)) {
-            throw new \Exception('callback can not callable');
+            throw new KoveyException('callback can not callable');
         }
 
         $this->events[$event] = $callable;
