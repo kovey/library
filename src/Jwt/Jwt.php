@@ -12,7 +12,6 @@
 namespace Kovey\Library\Jwt;
 
 use Kovey\Library\Util\Json;
-use Kovey\Library\Encryption\Aes;
 use Kovey\Library\Exception\TokenExpiredException;
 
 class Jwt 
