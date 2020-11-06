@@ -24,7 +24,7 @@ class AesTest extends TestCase
 
     public function testEncrypt()
     {
-        $this->assertEquals('YYKiIdErJTudQ98Fmomgcg==', Aes::encrypt('aaa', md5('bbb')));
+        $this->assertEquals('WVlLaUlkRXJKVHVkUTk4Rm1vbWdjZz09', Aes::encrypt('aaa', md5('bbb')));
     }
 
     public function testDecryptFailureShortKey()

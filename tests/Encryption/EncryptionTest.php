@@ -30,13 +30,13 @@ class EncryptionTest extends TestCase
 
     public function testAesEncrypt()
     {
-       $this->assertEquals('8YVUbpPkuAwNZGUuDOHIYA==', Encryption::encrypt('aaabbb', md5('bb'), 'aes'));
+       $this->assertEquals('9HDabDC8gmC/yDM8Gadn+A==', Encryption::encrypt('aaabbb', 'vGKUOiH8jF6z9atNR3Ty3po4rVXQV1Qa9UzNV91mO9f', 'aes'));
     }
 
     public function testAesDecryptUnsupportType()
     {
        $this->expectException(KoveyException::class) ;
-       Encryption::decrypt('aaabbb', md5('bbb'), 'md5');
+       Encryption::decrypt('aaabbb', 'vGKUOiH8jF6z9atNR3Ty3po4rVXQV1Qa9UzNV91mO9f', 'md5');
     }
 
     public function testAesDescryptFailureInvalidKey()
@@ -47,7 +47,7 @@ class EncryptionTest extends TestCase
 
     public function testAesDescrypt()
     {
-       $this->assertEquals('aaabbb', Encryption::decrypt('8YVUbpPkuAwNZGUuDOHIYA==', md5('bb'), 'aes'));
+       $this->assertEquals('aaabbb', Encryption::decrypt('9HDabDC8gmC/yDM8Gadn+A==', 'vGKUOiH8jF6z9atNR3Ty3po4rVXQV1Qa9UzNV91mO9f', 'aes'));
     }
 
     public function testPubRsaEncryptFailureInvalidKey()

@@ -12,6 +12,7 @@
 namespace Kovey\Library\Encryption;
 
 use Kovey\Library\Exception\KoveyException;
+use Kovey\Library\Jwt\Aes;
 
 class Encryption
 {
