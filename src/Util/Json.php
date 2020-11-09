@@ -44,7 +44,7 @@ class Json
 	public static function decode(string $data) : Array
 	{
 		$result = json_decode($data, true);
-        if (empty($result)) {
+        if (is_null($result)) {
             throw new KoveyException(json_last_error_msg());
         }
 
