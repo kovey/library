@@ -37,6 +37,13 @@ class Container implements ContainerInterface
     private Array $keywords;
 
 	/**
+	 * @description events
+	 *
+	 * @var Array
+	 */
+    private Array $events;
+
+	/**
 	 * @description construct
      *
      * @return Container
@@ -45,7 +52,8 @@ class Container implements ContainerInterface
     {
         $this->instances = array();
         $this->methods = array();
-        $this->keywords = array('Transaction', 'Router', 'Database', 'Redis');
+        $this->keywords = array('Transaction', 'Router', 'Database', 'Redis', 'ShardingDatabase', 'ShardingRedis');
+        $this->events = array();
     }
 
 	/**
@@ -72,7 +80,7 @@ class Container implements ContainerInterface
 
         if (count($args) < 1) {
             if ($class->hasMethod('__construct')) {
-                $args = $this->getMethodArguments($class->getName(), '__construct', $traceId)['arguments'];
+                $args = $this->getMethodArguments($class->getName(), '__construct', $traceId);
             }
         }
 
@@ -228,13 +236,82 @@ class Container implements ContainerInterface
     {
         $classMethod = $class . '::' . $method;
         $this->methods[$classMethod] ??= $this->resolveMethod($classMethod);
-        $attrs = $this->methods[$classMethod];
-        array_walk ($attrs['arguments'], function(&$attr) use ($traceId, $ext) {
+        $attrs = $this->methods[$classMethod]['arguments'];
+        array_walk ($attrs, function(&$attr) use ($traceId, $ext) {
             $obj = $this->get($attr->getName(), $traceId, $ext, ...$attr->getArguments());
             $obj->traceId = $traceId;
             $attr = $obj;
         });
 
         return $attrs;
+    }
+
+    /**
+     * @description 获取关键字
+     *
+     * @param string $class
+     *
+     * @param string $methods
+     * 
+     * @return Array
+     */
+    public function getKeywords(string $class, string $method) : Array
+    {
+        $classMethod = $class . '::' . $method;
+        $this->methods[$classMethod] ??= $this->resolveMethod($classMethod);
+        $objectExt = array(
+            'ext' => array()
+        );
+        foreach ($this->methods[$classMethod]['keywords'] as $keyword => $field) {
+            if ($keyword === 'Transaction') {
+                $objectExt['openTransaction'] = true;
+                continue;
+            }
+
+            if ($keyword === 'Router') {
+                if (!isset($this->events['router'])) {
+                    continue;
+                }
+                $objectExt['router'] = call_user_func($this->events['router'], ...$field);
+            }
+
+            if ($keyword === 'Database' || $keyword === 'ShardingDatabase') {
+                if (!isset($this->events[$keyword])) {
+                    continue;
+                }
+
+                $objectExt['db'] = call_user_func($this->events[$keyword]);
+                $objectExt['ext'][$field[0]] = $objectExt['db'];
+                continue;
+            }
+            if ($keyword === 'Redis' || $keyword === 'ShardingRedis') {
+                if (!isset($this->events[$keyword])) {
+                    continue;
+                }
+
+                $objectExt['ext'][$field[0]] = call_user_func($this->events[$keyword]);
+            }
+        }
+
+        return $objectExt;
+    }
+
+    /**
+     * @description events
+     *
+     * @param string $events
+     * 
+     * @param callable | Array $fun
+     *
+     * @return $this
+     */
+    public function on(string $event, callable | Array $fun) : ContainerInterface
+    {
+        if (!is_callable($fun)) {
+            throw new KoveyException('fun is not callable');
+        }
+
+        $this->events[$event] = $fun;
+        return $this;
     }
 }

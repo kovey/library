@@ -29,6 +29,9 @@ class ContainerTest extends TestCase
         $traceId = hash('sha256', '123456');
         $container = new Container();
         $foo = $container->get('Kovey\Library\Container\Cases\Foo', $traceId);
+        $container->on('Database', function () {
+            return 'Db';
+        });
         $this->assertInstanceOf(Cases\Foo::class, $foo);
         $this->assertEquals($traceId, $foo->traceId);
         $foo1 = $foo->getFoo1();
@@ -39,11 +42,13 @@ class ContainerTest extends TestCase
         $this->assertEquals($traceId, $foo2->traceId);
         $this->assertEquals('this is test', $foo2->getName());
         $args = $container->getMethodArguments('Kovey\Library\Container\Cases\Foo', 'test', $traceId);
-        $this->assertEquals(1, count($args['arguments']));
-        $this->assertInstanceOf(Cases\Foo1::class, $args['arguments'][0]);
-        $this->assertEquals(array('db'), $args['keywords']['Database']);
-        $this->assertEquals(array(), $args['keywords']['Transaction']);
-        $this->assertTrue(!isset($args['keywords']['Redis']));
+        $keywords = $container->getKeywords('Kovey\Library\Container\Cases\Foo', 'test');
+        $this->assertEquals(1, count($args));
+        $this->assertInstanceOf(Cases\Foo1::class, $args[0]);
+        $this->assertEquals('Db', $keywords['ext']['db']);
+        $this->assertTrue(!isset($keywords['ext']['redis']));
+        $this->assertTrue($keywords['openTransaction']);
+        $this->assertEquals('Db', $keywords['db']);
     }
 
     public function testGetFailure()

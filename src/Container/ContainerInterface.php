@@ -43,4 +43,26 @@ interface ContainerInterface
      * @return Array
      */
     public function getMethodArguments(string $class, string $method, string $traceId, Array $ext = array()) : Array;
+
+    /**
+     * @description 获取关键字
+     *
+     * @param string $class
+     *
+     * @param string $methods
+     * 
+     * @return Array
+     */
+    public function getKeywords(string $class, string $method) : Array;
+
+    /**
+     * @description events
+     *
+     * @param string $events
+     * 
+     * @param callable | Array $fun
+     *
+     * @return $this
+     */
+    public function on(string $event, callable | Array $fun) : ContainerInterface;
 }
