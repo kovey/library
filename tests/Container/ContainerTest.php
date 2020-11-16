@@ -45,10 +45,10 @@ class ContainerTest extends TestCase
         $keywords = $container->getKeywords('Kovey\Library\Container\Cases\Foo', 'test');
         $this->assertEquals(1, count($args));
         $this->assertInstanceOf(Cases\Foo1::class, $args[0]);
-        $this->assertEquals('Db', $keywords['ext']['db']);
+        $this->assertEquals('Db', $keywords['ext']['database']);
         $this->assertTrue(!isset($keywords['ext']['redis']));
         $this->assertTrue($keywords['openTransaction']);
-        $this->assertEquals('Db', $keywords['db']);
+        $this->assertEquals('Db', $keywords['database']);
     }
 
     public function testGetFailure()

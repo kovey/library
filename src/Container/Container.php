@@ -52,7 +52,14 @@ class Container implements ContainerInterface
     {
         $this->instances = array();
         $this->methods = array();
-        $this->keywords = array('Transaction', 'Database', 'Redis', 'ShardingDatabase', 'ShardingRedis', 'GlobalId');
+        $this->keywords = array(
+            'Transaction' => true, 
+            'Database' => 'database', 
+            'Redis' => 'redis', 
+            'ShardingDatabase' => 'database', 
+            'ShardingRedis' => 'redis', 
+            'GlobalId' => 'globalId'
+        );
         $this->events = array();
     }
 
@@ -145,7 +152,7 @@ class Container implements ContainerInterface
 
         foreach ($method->getAttributes() as $attr) {
             $isKeywords = false;
-            foreach ($this->keywords as $keyword) {
+            foreach (array_keys($this->keywords) as $keyword) {
                 if (substr($attr->getName(), 0 - strlen($keyword)) === $keyword) {
                     $attrs['keywords'][$keyword] = $attr->getArguments();
                     $isKeywords = true;
@@ -262,7 +269,7 @@ class Container implements ContainerInterface
         $objectExt = array(
             'ext' => array()
         );
-        foreach ($this->methods[$classMethod]['keywords'] as $keyword => $field) {
+        foreach ($this->methods[$classMethod]['keywords'] as $keyword => $params) {
             if ($keyword === 'Transaction') {
                 $objectExt['openTransaction'] = true;
                 continue;
@@ -271,12 +278,10 @@ class Container implements ContainerInterface
                 continue;
             }
 
-            $fieldName = $field[0];
-            unset($field[0]);
-            $objectExt['ext'][$fieldName] = call_user_func($this->events[$keyword], ...$field);
+            $objectExt['ext'][$this->keywords[$keyword]] = call_user_func($this->events[$keyword], ...$params);
 
             if ($keyword === 'Database' || $keyword === 'ShardingDatabase') {
-                $objectExt['db'] = $objectExt['ext'][$fieldName];
+                $objectExt['database'] = $objectExt['ext'][$this->keywords[$keyword]];
             }
         }
 
@@ -294,6 +299,10 @@ class Container implements ContainerInterface
      */
     public function on(string $event, callable | Array $fun) : ContainerInterface
     {
+        if (!isset($this->keywords[$event])) {
+            throw new KoveyException("$event is not support.");
+        }
+
         if (!is_callable($fun)) {
             throw new KoveyException('fun is not callable');
         }
