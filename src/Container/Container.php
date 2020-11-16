@@ -52,7 +52,7 @@ class Container implements ContainerInterface
     {
         $this->instances = array();
         $this->methods = array();
-        $this->keywords = array('Transaction', 'Router', 'Database', 'Redis', 'ShardingDatabase', 'ShardingRedis');
+        $this->keywords = array('Transaction', 'Database', 'Redis', 'ShardingDatabase', 'ShardingRedis', 'GlobalId');
         $this->events = array();
     }
 
@@ -267,29 +267,16 @@ class Container implements ContainerInterface
                 $objectExt['openTransaction'] = true;
                 continue;
             }
-
-            if ($keyword === 'Router') {
-                if (!isset($this->events['router'])) {
-                    continue;
-                }
-                $objectExt['router'] = call_user_func($this->events['router'], ...$field);
-            }
-
-            if ($keyword === 'Database' || $keyword === 'ShardingDatabase') {
-                if (!isset($this->events[$keyword])) {
-                    continue;
-                }
-
-                $objectExt['db'] = call_user_func($this->events[$keyword]);
-                $objectExt['ext'][$field[0]] = $objectExt['db'];
+            if (!isset($this->events[$keyword])) {
                 continue;
             }
-            if ($keyword === 'Redis' || $keyword === 'ShardingRedis') {
-                if (!isset($this->events[$keyword])) {
-                    continue;
-                }
 
-                $objectExt['ext'][$field[0]] = call_user_func($this->events[$keyword]);
+            $fieldName = $field[0];
+            unset($field[0]);
+            $objectExt['ext'][$fieldName] = call_user_func($this->events[$keyword], ...$field);
+
+            if ($keyword === 'Database' || $keyword === 'ShardingDatabase') {
+                $objectExt['db'] = $objectExt['ext'][$fieldName];
             }
         }
 
