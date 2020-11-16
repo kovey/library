@@ -38,6 +38,12 @@ class ContainerTest extends TestCase
         $this->assertInstanceOf(Cases\Foo2::class, $foo2);
         $this->assertEquals($traceId, $foo2->traceId);
         $this->assertEquals('this is test', $foo2->getName());
+        $args = $container->getMethodArguments('Kovey\Library\Container\Cases\Foo', 'test', $traceId);
+        $this->assertEquals(1, count($args['arguments']));
+        $this->assertInstanceOf(Cases\Foo1::class, $args['arguments'][0]);
+        $this->assertEquals(array('db'), $args['keywords']['Database']);
+        $this->assertEquals(array(), $args['keywords']['Transaction']);
+        $this->assertTrue(!isset($args['keywords']['Redis']));
     }
 
     public function testGetFailure()

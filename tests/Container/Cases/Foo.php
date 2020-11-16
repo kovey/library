@@ -20,4 +20,12 @@ class Foo
     {
         return $this->foo1;
     }
+
+    #[Foo1]
+    #[Transaction]
+    #[Database('db')]
+    public function test(Foo1 $foo1) : Foo1
+    {
+        return $foo1;
+    }
 }

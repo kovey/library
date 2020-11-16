@@ -11,6 +11,8 @@
  */
 namespace Kovey\Library\Container;
 
+use Kovey\Library\Exception\KoveyException;
+
 class Container implements ContainerInterface
 {
 	/**
@@ -28,6 +30,13 @@ class Container implements ContainerInterface
     private Array $methods;
 
 	/**
+	 * @description keywords
+	 *
+	 * @var Array
+	 */
+    private Array $keywords;
+
+	/**
 	 * @description construct
      *
      * @return Container
@@ -36,6 +45,7 @@ class Container implements ContainerInterface
     {
         $this->instances = array();
         $this->methods = array();
+        $this->keywords = array('Transaction', 'Router', 'Database', 'Redis');
     }
 
 	/**
@@ -45,25 +55,28 @@ class Container implements ContainerInterface
      *
      * @param string $traceId
      *
+     * @param Array $ext
+     *
      * @param ... $args
-	 *
+     *
 	 * @return mixed
 	 *
 	 * @throws Throwable
 	 */
-    public function get(string $class, string $traceId, ...$args)
+    public function get(string $class, string $traceId, Array $ext = array(), ...$args)
     {
         $class = new \ReflectionClass($class);
         if (!isset($this->instances[$class->getName()])) {
-            $this->resolveMethod($class);
             $this->resolve($class);
         }
 
         if (count($args) < 1) {
-            $args = $this->getMethodArguments($class->getName(), '__construct', $traceId);
+            if ($class->hasMethod('__construct')) {
+                $args = $this->getMethodArguments($class->getName(), '__construct', $traceId)['arguments'];
+            }
         }
 
-        return $this->bind($class, $traceId, $this->instances[$class->getName()], $args);
+        return $this->bind($class, $traceId, $this->instances[$class->getName()], $ext, $args);
     }
 
 	/**
@@ -75,11 +88,13 @@ class Container implements ContainerInterface
      *
 	 * @param Array $dependencies
      *
+     * @param Array $ext
+     *
 	 * @param Array $args
-	 *
+     *
 	 * @return mixed
 	 */
-    private function bind(\ReflectionClass | \ReflectionAttribute $class, string $traceId, Array $dependencies, Array $args = array())
+    private function bind(\ReflectionClass | \ReflectionAttribute $class, string $traceId, Array $dependencies, Array $ext = array(), Array $args = array())
     {
 		$obj = null;
 		if (count($args) > 0) {
@@ -89,12 +104,16 @@ class Container implements ContainerInterface
 		}
 
         $obj->traceId = $traceId;
+        foreach ($ext as $field => $val) {
+            $obj->$field = $val;
+        }
+
         if (count($dependencies) < 1) {
             return $obj;
         }
 
         foreach ($dependencies as $dependency) {
-            $dep = $this->bind($dependency['class'], $traceId, $this->instances[$dependency['class']->getName()] ?? array());
+            $dep = $this->bind($dependency['class'], $traceId, $this->instances[$dependency['class']->getName()] ?? array(), $ext);
             $dependency['property']->setValue($obj, $dep);
         }
 
@@ -104,16 +123,35 @@ class Container implements ContainerInterface
 	/**
 	 * @description cache
 	 *
-	 * @param ReflectionClass | ReflectionAttribute $class
+     * @param string $classMethod
 	 *
-	 * @return null
+	 * @return Array
 	 */
-    private function resolveMethod(\ReflectionClass | \ReflectionAttribute $class)
+    private function resolveMethod(string $classMethod) : Array
     {
-        $methods = $class->getMethods();
-        foreach ($methods as $method) {
-            $this->methods[$class->getName() . '::' . $method->getName()] = $method->getAttributes();
+        $method = new \ReflectionMethod($classMethod);
+        $attrs = array(
+            'keywords' => array(),
+            'arguments' => array()
+        );
+
+        foreach ($method->getAttributes() as $attr) {
+            $isKeywords = false;
+            foreach ($this->keywords as $keyword) {
+                if (substr($attr->getName(), 0 - strlen($keyword)) === $keyword) {
+                    $attrs['keywords'][$keyword] = $attr->getArguments();
+                    $isKeywords = true;
+                }
+            }
+
+            if ($isKeywords) {
+                continue;
+            }
+
+            $attrs['arguments'][] = $attr;
         }
+
+        return $attrs;
     }
 
 	/**
@@ -182,16 +220,21 @@ class Container implements ContainerInterface
      *
      * @param string $traceId
      *
+     * @param Array $ext
+     *
      * @return Array
      */
-    public function getMethodArguments(string $class, string $method, string $traceId) : Array
+    public function getMethodArguments(string $class, string $method, string $traceId, Array $ext = array()) : Array
     {
-        $attrs = $this->methods[$class . '::' . $method] ?? array();
-        $result = array();
-        foreach ($attrs as $attr) {
-            $result[] = $this->get($attr->getName(), $traceId, ...$attr->getArguments());
-        }
+        $classMethod = $class . '::' . $method;
+        $this->methods[$classMethod] ??= $this->resolveMethod($classMethod);
+        $attrs = $this->methods[$classMethod];
+        array_walk ($attrs['arguments'], function(&$attr) use ($traceId, $ext) {
+            $obj = $this->get($attr->getName(), $traceId, $ext, ...$attr->getArguments());
+            $obj->traceId = $traceId;
+            $attr = $obj;
+        });
 
-        return $result;
+        return $attrs;
     }
 }

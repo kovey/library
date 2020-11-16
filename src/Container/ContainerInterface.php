@@ -20,10 +20,27 @@ interface ContainerInterface
 	 * @param string $class
      *
      * @param string $traceId
+     *
+     * @param Array $ext
 	 *
 	 * @param ...mixed $args
 	 *
 	 * @return mixed
 	 */
-    public function get(string $class, string $traceId, ...$args);
+    public function get(string $class, string $traceId, Array $ext = array(), ...$args);
+
+    /**
+     * @description method arguments
+     *
+     * @param string $class
+     *
+     * @param string $method
+     *
+     * @param string $traceId
+     *
+     * @param Array $ext
+     *
+     * @return Array
+     */
+    public function getMethodArguments(string $class, string $method, string $traceId, Array $ext = array()) : Array;
 }
