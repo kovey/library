@@ -55,7 +55,7 @@ class Container implements ContainerInterface
         $this->keywords = array(
             'transaction' => true, 
             'database' => 'database', 
-            'dedis' => 'redis', 
+            'redis' => 'redis', 
             'shardingDatabase' => 'database', 
             'shardingRedis' => 'redis', 
             'globalId' => 'globalId'
