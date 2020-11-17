@@ -53,12 +53,12 @@ class Container implements ContainerInterface
         $this->instances = array();
         $this->methods = array();
         $this->keywords = array(
-            'Transaction' => true, 
-            'Database' => 'database', 
-            'Redis' => 'redis', 
-            'ShardingDatabase' => 'database', 
-            'ShardingRedis' => 'redis', 
-            'GlobalId' => 'globalId'
+            'transaction' => true, 
+            'database' => 'database', 
+            'dedis' => 'redis', 
+            'shardingDatabase' => 'database', 
+            'shardingRedis' => 'redis', 
+            'globalId' => 'globalId'
         );
         $this->events = array();
     }
@@ -269,22 +269,32 @@ class Container implements ContainerInterface
         $objectExt = array(
             'ext' => array()
         );
+
+        $hasTransation = false;
+        $hasDatabase = false;
         foreach ($this->methods[$classMethod]['keywords'] as $keyword => $params) {
-            if ($keyword === 'Transaction') {
-                $objectExt['openTransaction'] = true;
+            if ($keyword === 'transaction') {
+                $hasTransation = true;
                 continue;
             }
             if (!isset($this->events[$keyword])) {
                 continue;
             }
 
-            $objectExt['ext'][$this->keywords[$keyword]] = call_user_func($this->events[$keyword], ...$params);
+            $pool = call_user_func($this->events[$keyword], ...$params);
 
-            if ($keyword === 'Database' || $keyword === 'ShardingDatabase') {
-                $objectExt['database'] = $objectExt['ext'][$this->keywords[$keyword]];
+            if ($keyword === 'database' || $keyword === 'redis') {
+                if ($keyword === 'database') {
+                    $hasDatabase = true;
+                }
+                $objectExt[$keyword] = $pool;
+                $objectExt['ext'][$this->keywords[$keyword]] = $pool->getConnection();
+            } else {
+                $objectExt['ext'][$this->keywords[$keyword]] = $pool;
             }
         }
 
+        $objectExt['openTransaction'] = $hasTransation && $hasDatabase;
         return $objectExt;
     }
 
