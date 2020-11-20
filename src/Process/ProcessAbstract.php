@@ -142,15 +142,18 @@ abstract class ProcessAbstract
 	 * @param string $method
 	 *
 	 * @param Array $args
+     *
+     * @param string $traceId
 	 *
 	 * @return bool
 	 */
-    protected function send(string $path, string $method, Array $params = array()) : bool
+    protected function send(string $path, string $method, Array $params = array(), string $traceId = '') : bool
     {
         return $this->server->sendMessage(array(
             'p' => $path,
             'm' => $method,
-            'a' => $params
+            'a' => $params,
+            't' => $traceId
         ), $this->getWorkerId());
     }
 
