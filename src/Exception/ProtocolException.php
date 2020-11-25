@@ -20,6 +20,13 @@ class ProtocolException extends KoveyException
 	 */
 	private string $errorType;
 
+    /**
+     * @description trace info
+     *
+     * @var string
+     */
+    private string $traceString;
+
 	/**
 	 * @description 构造函数
 	 *
@@ -31,9 +38,10 @@ class ProtocolException extends KoveyException
 	 *
 	 * @return Exception
 	 */
-	public function __construct(string $msg, int $code, string $type)
+	public function __construct(string $msg, int $code, string $type, string $traceString = '')
 	{
 		$this->errorType = $type;
+        $this->traceString = $traceString;
 
 		parent::__construct($msg, $code);
 	}
@@ -47,4 +55,14 @@ class ProtocolException extends KoveyException
 	{
 		return $this->errorType;
 	}
+
+    /**
+     * @description get trace string
+     *
+     * @return string
+     */
+    public function getTraceString() : string
+    {
+        return $this->traceString;
+    }
 }

@@ -18,11 +18,12 @@ class ProtocolExceptionTest extends TestCase
     public function testException()
     {
         $this->expectException(ProtocolException::class);
-        $e = new ProtocolException('protocol exception', 1000, 'exception');
+        $e = new ProtocolException('protocol exception', 1000, 'exception', 'traceString');
         $this->assertInstanceOf(KoveyException::class, $e);
         $this->assertEquals('protocol exception', $e->getMessage());
         $this->assertEquals(1000, $e->getCode());
         $this->assertEquals('exception', $e->getErrorType());
+        $this->assertEquals('traceString', $e->getTraceString());
         throw $e;
     }
 }

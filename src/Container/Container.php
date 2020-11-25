@@ -288,7 +288,11 @@ class Container implements ContainerInterface
                     $hasDatabase = true;
                 }
                 $objectExt[$this->keywords[$keyword]] = $pool;
-                $objectExt['ext'][$this->keywords[$keyword]] = $pool->getConnection();
+                if (is_object($pool) && method_exists($pool, 'getConnection')) {
+                    $objectExt['ext'][$this->keywords[$keyword]] = $pool->getConnection();
+                } else {
+                    $objectExt['ext'][$this->keywords[$keyword]] = $pool;
+                }
             } else {
                 $objectExt['ext'][$this->keywords[$keyword]] = $pool;
             }
