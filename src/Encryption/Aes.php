@@ -15,19 +15,19 @@ use Kovey\Library\Exception\KoveyException;
 
 class Aes
 {
-	/**
-	 * @description 加密
-	 *
-	 * @param string $data
-	 *
-	 * @param string $key
+    /**
+     * @description 加密
+     *
+     * @param string $data
+     *
+     * @param string $key
      *
      * @param bool $isBase64 = true
-	 *
-	 * @return string
+     *
+     * @return string
      *
      * @throws KoveyException
-	 */
+     */
     public static function encrypt(string $data, string $key, bool $isBase64 = true) : string
     {
         if (strlen($key) < 16) {
@@ -47,19 +47,19 @@ class Aes
         return $result;
     }
 
-	/**
-	 * @description 解密
-	 *
-	 * @param string $encrypt
-	 *
-	 * @param string $key
+    /**
+     * @description 解密
+     *
+     * @param string $encrypt
+     *
+     * @param string $key
      *
      * @param bool $isBase64 = true
-	 *
-	 * @return string
+     *
+     * @return string
      *
      * @throws KoveyException
-	 */
+     */
     public static function decrypt(string $encrypt, string $key, bool $isBase64 = true) : string
     {
         if (strlen($key) < 16) {

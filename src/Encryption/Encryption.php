@@ -16,21 +16,21 @@ use Kovey\Library\Jwt\Aes;
 
 class Encryption
 {
-	/**
-	 * @description 加密
-	 *
-	 * @param string $data
-	 *
-	 * @param string $key
-	 *
-	 * @param string $type
-	 *
-	 * @param bool isPub
-	 *
-	 * @return string
+    /**
+     * @description 加密
+     *
+     * @param string $data
+     *
+     * @param string $key
+     *
+     * @param string $type
+     *
+     * @param bool isPub
+     *
+     * @return string
      *
      * @throws KoveyException
-	 */
+     */
     public static function encrypt(string $data, string $key, string $type = 'aes', bool $isPub = false) : string
     {
         if (strtolower($type) === 'aes') {
@@ -48,21 +48,21 @@ class Encryption
         throw new KoveyException("$type is not support");
     }
 
-	/**
-	 * @description 解密
-	 *
-	 * @param string $data
-	 *
-	 * @param string $key
-	 *
-	 * @param string $type
-	 *
-	 * @param bool isPub
-	 *
+    /**
+     * @description 解密
+     *
+     * @param string $data
+     *
+     * @param string $key
+     *
+     * @param string $type
+     *
+     * @param bool isPub
+     *
      * @return string
      *
      * @throws KoveyException
-	 */
+     */
     public static function decrypt(string $data, string $key, string $type = 'aes', bool $isPub = false) : string
     {
         if (strtolower($type) === 'aes') {

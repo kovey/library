@@ -13,12 +13,12 @@ namespace Kovey\Library\Exception;
 
 class ProtocolException extends KoveyException
 {
-	/**
-	 * @description 错误类型
-	 *
-	 * @var string
-	 */
-	private string $errorType;
+    /**
+     * @description 错误类型
+     *
+     * @var string
+     */
+    private string $errorType;
 
     /**
      * @description trace info
@@ -27,34 +27,34 @@ class ProtocolException extends KoveyException
      */
     private string $traceString;
 
-	/**
-	 * @description 构造函数
-	 *
-	 * @param string $msg
-	 *
-	 * @param int $code
-	 *
-	 * @param string $type
-	 *
-	 * @return Exception
-	 */
-	public function __construct(string $msg, int $code, string $type, string $traceString = '')
-	{
-		$this->errorType = $type;
+    /**
+     * @description 构造函数
+     *
+     * @param string $msg
+     *
+     * @param int $code
+     *
+     * @param string $type
+     *
+     * @return Exception
+     */
+    public function __construct(string $msg, int $code, string $type, string $traceString = '')
+    {
+        $this->errorType = $type;
         $this->traceString = $traceString;
 
-		parent::__construct($msg, $code);
-	}
+        parent::__construct($msg, $code);
+    }
 
-	/**
-	 * @description 获取错误类型
-	 *
-	 * @return string
-	 */
-	public function getErrorType() : string
-	{
-		return $this->errorType;
-	}
+    /**
+     * @description 获取错误类型
+     *
+     * @return string
+     */
+    public function getErrorType() : string
+    {
+        return $this->errorType;
+    }
 
     /**
      * @description get trace string

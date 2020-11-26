@@ -298,24 +298,24 @@ class Validator
         return (bool)preg_match('/^[a-f0-9]+$/', $val);
     }
 
-	public function date($date) : bool
-	{
+    public function date($date) : bool
+    {
         $date = explode('-', $date);
         if (count($date) != 3) {
             return false;
         }
 
-		if (strlen($date[0]) != 4
-			|| strlen($date[1]) != 2	
-			|| strlen($date[2]) != 2	
-		) {
-			return false;
-		}
+        if (strlen($date[0]) != 4
+            || strlen($date[1]) != 2    
+            || strlen($date[2]) != 2    
+        ) {
+            return false;
+        }
 
-		if (!ctype_digit($date[0]) 
-			|| !ctype_digit($date[1])
-			|| !ctype_digit($date[2])
-		) {
+        if (!ctype_digit($date[0]) 
+            || !ctype_digit($date[1])
+            || !ctype_digit($date[2])
+        ) {
             return false;
         }
 
@@ -333,33 +333,33 @@ class Validator
                     return false;
                 }
             } else {
-				if (intval($date[2]) > 28 || intval($date[2]) < 1) {
-					return false;
-				}
-			}
-		} else {
+                if (intval($date[2]) > 28 || intval($date[2]) < 1) {
+                    return false;
+                }
+            }
+        } else {
             if (intval($date[2]) > 30 || intval($date[2]) < 1) {
                 return false;
             }
-		}
+        }
 
         return true;
-	}
+    }
 
     public function dateTime($dateTime) : bool
     {
-		$info = explode(' ', $dateTime);
-		if (count($info) != 2) {
-			return false;
-		}
+        $info = explode(' ', $dateTime);
+        if (count($info) != 2) {
+            return false;
+        }
 
-		$date = $info[0];
-		if (!$this->date($date)) {
-			return false;
-		}
+        $date = $info[0];
+        if (!$this->date($date)) {
+            return false;
+        }
 
-		$time = $info[1];
-		return $this->time($time);
+        $time = $info[1];
+        return $this->time($time);
     }
 
     public function isLeapYear($year) : bool
@@ -377,17 +377,17 @@ class Validator
 
     public function time($time) : bool
     {
-		$time = explode(':', $time);
+        $time = explode(':', $time);
         if (count($time) != 3) {
             return false;
         }
 
-		if (strlen($time[0]) != 2
-			|| strlen($time[1]) != 2	
-			|| strlen($time[2]) != 2	
-		) {
-			return false;
-		}
+        if (strlen($time[0]) != 2
+            || strlen($time[1]) != 2    
+            || strlen($time[2]) != 2    
+        ) {
+            return false;
+        }
 
         if (!ctype_digit($time[0]) || !ctype_digit($time[1]) || !ctype_digit($time[2])) {
             return false;

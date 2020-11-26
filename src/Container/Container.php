@@ -15,39 +15,39 @@ use Kovey\Library\Exception\KoveyException;
 
 class Container implements ContainerInterface
 {
-	/**
-	 * @description cache
-	 *
-	 * @var Array
-	 */
+    /**
+     * @description cache
+     *
+     * @var Array
+     */
     private Array $instances;
 
-	/**
-	 * @description methods cache
-	 *
-	 * @var Array
-	 */
+    /**
+     * @description methods cache
+     *
+     * @var Array
+     */
     private Array $methods;
 
-	/**
-	 * @description keywords
-	 *
-	 * @var Array
-	 */
+    /**
+     * @description keywords
+     *
+     * @var Array
+     */
     private Array $keywords;
 
-	/**
-	 * @description events
-	 *
-	 * @var Array
-	 */
+    /**
+     * @description events
+     *
+     * @var Array
+     */
     private Array $events;
 
-	/**
-	 * @description construct
+    /**
+     * @description construct
      *
      * @return Container
-	 */
+     */
     public function __construct()
     {
         $this->instances = array();
@@ -63,10 +63,10 @@ class Container implements ContainerInterface
         $this->events = array();
     }
 
-	/**
-	 * @description get object
-	 *
-	 * @param string $class
+    /**
+     * @description get object
+     *
+     * @param string $class
      *
      * @param string $traceId
      *
@@ -74,10 +74,10 @@ class Container implements ContainerInterface
      *
      * @param ... $args
      *
-	 * @return mixed
-	 *
-	 * @throws Throwable
-	 */
+     * @return mixed
+     *
+     * @throws Throwable
+     */
     public function get(string $class, string $traceId, Array $ext = array(), ...$args)
     {
         $class = new \ReflectionClass($class);
@@ -94,29 +94,29 @@ class Container implements ContainerInterface
         return $this->bind($class, $traceId, $this->instances[$class->getName()], $ext, $args);
     }
 
-	/**
-	 * @description bind
-	 *
-	 * @param ReflectionClass | ReflectionAttribute $class
+    /**
+     * @description bind
+     *
+     * @param ReflectionClass | ReflectionAttribute $class
      *
      * @param string $traceId
      *
-	 * @param Array $dependencies
+     * @param Array $dependencies
      *
      * @param Array $ext
      *
-	 * @param Array $args
+     * @param Array $args
      *
-	 * @return mixed
-	 */
+     * @return mixed
+     */
     private function bind(\ReflectionClass | \ReflectionAttribute $class, string $traceId, Array $dependencies, Array $ext = array(), Array $args = array())
     {
-		$obj = null;
-		if (count($args) > 0) {
-			$obj = $class->newInstanceArgs($args);
-		} else {
-			$obj = $class->newInstance();
-		}
+        $obj = null;
+        if (count($args) > 0) {
+            $obj = $class->newInstanceArgs($args);
+        } else {
+            $obj = $class->newInstance();
+        }
 
         $obj->traceId = $traceId;
         foreach ($ext as $field => $val) {
@@ -135,13 +135,13 @@ class Container implements ContainerInterface
         return $obj;
     }
 
-	/**
-	 * @description cache
-	 *
+    /**
+     * @description cache
+     *
      * @param string $classMethod
-	 *
-	 * @return Array
-	 */
+     *
+     * @return Array
+     */
     private function resolveMethod(string $classMethod) : Array
     {
         $method = new \ReflectionMethod($classMethod);
@@ -169,13 +169,13 @@ class Container implements ContainerInterface
         return $attrs;
     }
 
-	/**
-	 * @description cache
-	 *
-	 * @param ReflectionClass | ReflectionAttribute $class
-	 *
-	 * @return null
-	 */
+    /**
+     * @description cache
+     *
+     * @param ReflectionClass | ReflectionAttribute $class
+     *
+     * @return null
+     */
     private function resolve(\ReflectionClass | \ReflectionAttribute $class)
     {
         $this->instances[$class->getName()] = $this->getAts($class);
@@ -184,13 +184,13 @@ class Container implements ContainerInterface
         }
     }
 
-	/**
-	 * @description get all reject
-	 *
-	 * @param ReflectionClass | ReflectionAttribute $ref
-	 *
-	 * @return Array
-	 */
+    /**
+     * @description get all reject
+     *
+     * @param ReflectionClass | ReflectionAttribute $ref
+     *
+     * @return Array
+     */
     private function getAts(\ReflectionClass | \ReflectionAttribute $ref) : Array
     {
         $properties = null;
@@ -202,25 +202,25 @@ class Container implements ContainerInterface
         }
         $ats = array();
         foreach ($properties as $property) {
-			$attrs = $property->getAttributes();
-			if (empty($attrs)) {
-				continue;
-			}
+            $attrs = $property->getAttributes();
+            if (empty($attrs)) {
+                continue;
+            }
 
-			foreach ($attrs as $attr) {
-				if ($property->isPrivate()
-					|| $property->isProtected()
-				) {
-					$property->setAccessible(true);
-				}
+            foreach ($attrs as $attr) {
+                if ($property->isPrivate()
+                    || $property->isProtected()
+                ) {
+                    $property->setAccessible(true);
+                }
 
-				$ats[$property->getName()] = array(
-					'class' => $attr,
-					'property' => $property
-				);
+                $ats[$property->getName()] = array(
+                    'class' => $attr,
+                    'property' => $property
+                );
 
-				break;
-			}
+                break;
+            }
         }
 
         return $ats;

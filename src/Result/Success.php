@@ -13,26 +13,26 @@ namespace Kovey\Library\Result;
 
 class Success extends Result
 {
-	/**
-	 * @description 获取成功结果数据
-	 *
-	 * @param Array $data
-	 *
-	 * @return Array
-	 */
+    /**
+     * @description 获取成功结果数据
+     *
+     * @param Array $data
+     *
+     * @return Array
+     */
     public static function getArray(Array $data = array()) : Array
     {
         $res = new self(ErrorCode::SUCCESS, 'success', $data);
         return $res->toArray();
     }
 
-	/**
-	 * @description 获取成功结果数据JSON
-	 *
-	 * @param Array $data
-	 *
-	 * @return string
-	 */
+    /**
+     * @description 获取成功结果数据JSON
+     *
+     * @param Array $data
+     *
+     * @return string
+     */
     public static function getJson(Array $data = array()) : string
     {
         $res = new self(ErrorCode::SUCCESS, 'success', $data);

@@ -14,19 +14,19 @@ namespace Kovey\Library\Container;
 
 interface ContainerInterface
 {
-	/**
-	 * @description 获取实例
-	 *
-	 * @param string $class
+    /**
+     * @description 获取实例
+     *
+     * @param string $class
      *
      * @param string $traceId
      *
      * @param Array $ext
-	 *
-	 * @param ...mixed $args
-	 *
-	 * @return mixed
-	 */
+     *
+     * @param ...mixed $args
+     *
+     * @return mixed
+     */
     public function get(string $class, string $traceId, Array $ext = array(), ...$args);
 
     /**
