@@ -106,6 +106,13 @@ interface ProtocolInterface
     public function getTraceId() : string;
 
     /**
+     * @description get from
+     *
+     * @return string
+     */
+    public function getFrom() : string;
+
+    /**
      * @description 打包
      *
      * @param Array $packet

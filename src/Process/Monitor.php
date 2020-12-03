@@ -42,12 +42,12 @@ class Monitor extends ProcessAbstract
                 return;
             }
 
-            $this->sendToMonitor('save', Json::encode($logger));
+            $this->sendToMonitor('save', Json::encode($logger), Manager::get('server.server.project'));
         });
 
         Timer::tick(60000, function () {
             $result = sys_getloadavg();
-            $this->sendToMonitor('load', $result, Manager::get('server.server.name'));
+            $this->sendToMonitor('load', $result, Manager::get('server.server.name'), Manager::get('server.server.project'));
             Logger::writeInfoLog(__LINE__, __FILE__, 'sys load average: ' . Json::encode($result));
         });
     }
@@ -73,7 +73,9 @@ class Monitor extends ProcessAbstract
             if (!$cli->send(array(
                 'p' => 'Monitor',
                 'm' => $method,
-                'a' => $args
+                'a' => $args,
+                't' => hash('sha256', uniqid('monitor', true) . random_int(0, 9999999)),
+                'f' => Manager::get('server.server.name')
             ))) {
                 $cli->close();
                 Logger::writeWarningLog(__LINE__, __FILE__, $cli->getError());
