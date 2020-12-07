@@ -96,8 +96,8 @@ class Monitor extends ProcessAbstract
                 }
             }
 
-            if (!$result['result']) {
-                Logger::writeWarningLog(__LINE__, __FILE__, 'save fail, logger: ' . $buffer);
+            if (empty($result['result'])) {
+                Logger::writeWarningLog(__LINE__, __FILE__, 'save fail, logger: ' . json_encode($result));
             }
         }, $method, $args);
     }
