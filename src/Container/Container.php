@@ -156,6 +156,7 @@ class Container implements ContainerInterface
                 if (substr($attr->getName(), 0 - strlen($keyword)) === $keyword) {
                     $attrs['keywords'][$keyword] = $attr->getArguments();
                     $isKeywords = true;
+                    break;
                 }
             }
 
