@@ -34,7 +34,7 @@ abstract class Result
      *
      * @var Array
      */
-    protected Array $data;
+    protected Array | \ArrayObject $data;
 
     /**
      * @description 是否开发模式
