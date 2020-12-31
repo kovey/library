@@ -24,7 +24,7 @@ class Error extends Result
      *
      * @return Array
      */
-    public static function getArray(int $code, string $msg, Array $data = array()) : Array
+    public static function getArray(int $code, string $msg, Array | \ArrayObject $data = array()) : Array
     {
         $res = new self($code, $msg, $data);
         return $res->toArray();
@@ -41,7 +41,7 @@ class Error extends Result
      *
      * @return string
      */
-    public static function getJson(int $code, string $msg, Array $data = array())
+    public static function getJson(int $code, string $msg, Array | \ArrayObject $data = array())
     {
         $res = new self($code, $msg, $data);
         return $res->toJson();

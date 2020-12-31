@@ -20,7 +20,7 @@ class Success extends Result
      *
      * @return Array
      */
-    public static function getArray(Array $data = array()) : Array
+    public static function getArray(Array | \ArrayObject $data = array()) : Array
     {
         $res = new self(ErrorCode::SUCCESS, 'success', $data);
         return $res->toArray();
@@ -33,7 +33,7 @@ class Success extends Result
      *
      * @return string
      */
-    public static function getJson(Array $data = array()) : string
+    public static function getJson(Array | \ArrayObject $data = array()) : string
     {
         $res = new self(ErrorCode::SUCCESS, 'success', $data);
         return $res->toJson();

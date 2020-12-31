@@ -54,7 +54,7 @@ abstract class Result
      *
      * @return Result
      */
-    public function __construct(int $code, string $msg, Array $data)
+    public function __construct(int $code, string $msg, Array | \ArrayObject $data)
     {
         $this->code = $code;
         $this->msg = $msg;

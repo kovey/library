@@ -118,7 +118,10 @@ class Container implements ContainerInterface
             $obj = $class->newInstance();
         }
 
-        $obj->traceId = $traceId;
+        if (!empty($traceId)) {
+            $obj->traceId = $traceId;
+        }
+
         foreach ($ext as $field => $val) {
             $obj->$field = $val;
         }
@@ -282,12 +285,13 @@ class Container implements ContainerInterface
                 continue;
             }
 
+            if ($keyword === 'Database') {
+                $hasDatabase = true;
+            }
+
             $pool = call_user_func($this->events[$keyword], ...$params);
 
             if ($keyword === 'Database' || $keyword === 'Redis') {
-                if ($keyword === 'Database') {
-                    $hasDatabase = true;
-                }
                 $objectExt[$this->keywords[$keyword]] = $pool;
                 if (is_object($pool) && method_exists($pool, 'getConnection')) {
                     $objectExt['ext'][$this->keywords[$keyword]] = $pool->getConnection();
