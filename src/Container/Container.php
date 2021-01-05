@@ -53,11 +53,11 @@ class Container implements ContainerInterface
         $this->instances = array();
         $this->methods = array();
         $this->keywords = array(
+            'ShardingDatabase' => 'database', 
+            'ShardingRedis' => 'redis', 
             'Transaction' => true, 
             'Database' => 'database', 
             'Redis' => 'redis', 
-            'ShardingDatabase' => 'database', 
-            'ShardingRedis' => 'redis', 
             'GlobalId' => 'globalId'
         );
         $this->events = array();
