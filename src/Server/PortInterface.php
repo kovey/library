@@ -25,9 +25,9 @@ interface PortInterface
      *
      * @param string $event
      *
-     * @param callable $callable
+     * @param callable | Array $callable
      *
      * @return mixed
      */
-    public function on(string $event, $callable) : PortInterface;
+    public function on(string $event, callable | Array $callable) : PortInterface;
 }
