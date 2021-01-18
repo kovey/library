@@ -44,9 +44,9 @@ class Manager
      *
      * @param int $maxRows = 1024
      *
-     * @return null
+     * @return void
      */
-    public static function init(string $path, int $maxRows = 1024)
+    public static function init(string $path, int $maxRows = 1024) : void
     {
         self::$path = $path;
         self::$keys = new \Swoole\Table($maxRows);
@@ -61,9 +61,9 @@ class Manager
     /**
      * @description parse config from file
      *
-     * @return null
+     * @return void
      */
-    private static function initParse()
+    private static function initParse() : void
     {
         $files = scandir(self::$path);
         foreach ($files as $file) {
@@ -85,9 +85,9 @@ class Manager
     /**
      * @description parse configs from file
      *
-     * @return null
+     * @return void
      */
-    public static function parse()
+    public static function parse() : void
     {
         go (function () {
             $files = scandir(self::$path);
@@ -115,9 +115,9 @@ class Manager
      *
      * @param string $content
      *
-     * @return null
+     * @return void
      */
-    private static function writeIntoMemory(string $file, string $content)
+    private static function writeIntoMemory(string $file, string $content) : void
     {
         $contents = explode("\n", $content);
         $areaKey = '';
@@ -189,9 +189,9 @@ class Manager
      *
      * @param Array $areaKeys
      *
-     * @return null
+     * @return void
      */
-    private static function writeKeyIntoMemory(string $pref, Array $areaKeys)
+    private static function writeKeyIntoMemory(string $pref, Array $areaKeys) : void
     {
         $keys = array();
         $areaKey = '';

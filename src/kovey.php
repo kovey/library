@@ -23,7 +23,7 @@ if (!extension_loaded('swoole')) {
  *
  * @return null
  */
-function ko_change_process_name($name)
+function ko_change_process_name(string $name) : void
 {
     if (ko_os_is_macos()) {
         return;
@@ -37,7 +37,7 @@ function ko_change_process_name($name)
  *
  * @return bool
  */
-function ko_os_is_macos()
+function ko_os_is_macos() : bool
 {
     return stristr(PHP_OS, 'DAR') !== false;
 }
@@ -47,7 +47,7 @@ function ko_os_is_macos()
  *
  * @return bool
  */
-function ko_os_is_linux()
+function ko_os_is_linux() : bool
 {
     return stristr(PHP_OS, 'LINUX') !== false;
 }
@@ -57,7 +57,7 @@ function ko_os_is_linux()
  *
  * @return bool
  */
-function ko_os_is_windows()
+function ko_os_is_windows() : bool
 {
     return !ko_os_is_macos() && stristr(PHP_OS, 'WIN') !== false;
 }

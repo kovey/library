@@ -105,5 +105,5 @@ abstract class Base implements PortInterface
      *
      * @return mixed
      */
-    abstract protected function init();
+    abstract protected function init() : void;
 }

@@ -49,7 +49,7 @@ class Jwt
      * @var Array
      */
     private $algConfig = array(
-        'HS256'=>'sha256'
+        'HS256' => 'sha256'
     );
 
     /**
