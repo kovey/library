@@ -19,7 +19,7 @@ class Version
 
     const LT = -1;
 
-    public function compare(string $left, string $right) : int
+    public static function compare(string $left, string $right) : int
     {
         $linfo = explode('.', $left);
         $lcount = count($linfo);
@@ -35,7 +35,7 @@ class Version
 
         for ($i = 0; $i < $lcount; $i ++) {
             if (!isset($rinfo[$i])) {
-                return self::GT;
+                break;
             }
 
             if ($linfo[$i] > $rinfo[$i]) {
@@ -47,8 +47,23 @@ class Version
             }
         }
 
+        if ($rcount == $lcount) {
+            return self::EQ;
+        }
+
         if ($rcount > $lcount) {
-            return self::LT;
+            return self::EQ - self::check($rinfo, $lcount, $rcount);
+        }
+
+        return self::check($linfo, $rcount, $lcount);
+    }
+
+    private static function check(Array $info, int $start, int $count) : int
+    {
+        for ($i = $start; $i < $count; $i ++) {
+            if ($info[$i] > 0) {
+                return self::GT;
+            }
         }
 
         return self::EQ;
