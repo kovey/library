@@ -33,6 +33,10 @@ class Encryption
      */
     public static function encrypt(string $data, string $key, string $type = 'aes', bool $isPub = false) : string
     {
+        if (strtolower($type) === 'no') {
+            return $data;
+        }
+
         if (strtolower($type) === 'aes') {
             return Aes::encrypt($data, $key);
         }
@@ -65,6 +69,10 @@ class Encryption
      */
     public static function decrypt(string $data, string $key, string $type = 'aes', bool $isPub = false) : string
     {
+        if (strtolower($type) === 'no') {
+            return $data;
+        }
+
         if (strtolower($type) === 'aes') {
             return Aes::decrypt($data, $key);
         }
