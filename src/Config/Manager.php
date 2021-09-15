@@ -37,6 +37,14 @@ class Manager
      */
     private static string $path;
 
+    const CONFIG_KEY_LEN = 256;
+
+    const CONFIG_KEY1_LEN = 512;
+    
+    const CONFIG_KEY2_LEN = 1024;
+
+    const CONFIG_KEY3_LEN = 1024;
+
     /** 
      * @description initial
      *
@@ -50,7 +58,11 @@ class Manager
     {
         self::$path = $path;
         self::$keys = new \Swoole\Table($maxRows);
-        self::$keys->column('k', \Swoole\Table::TYPE_STRING, 256);
+        self::$keys->column('k', \Swoole\Table::TYPE_STRING, self::CONFIG_KEY_LEN);
+        self::$keys->column('k1', \Swoole\Table::TYPE_STRING, self::CONFIG_KEY1_LEN);
+        self::$keys->column('k2', \Swoole\Table::TYPE_STRING, self::CONFIG_KEY2_LEN);
+        self::$keys->column('k3', \Swoole\Table::TYPE_STRING, self::CONFIG_KEY3_LEN);
+
         self::$keys->create();
         self::$values = new \Swoole\Table($maxRows);
         self::$values->column('v', \Swoole\Table::TYPE_STRING, 512);
@@ -212,7 +224,37 @@ class Manager
             }
         }
         $areaKey = $pref === '' ? $areaKey : $pref . '.' . $areaKey;
-        self::$keys->set(md5($areaKey), array('k' => serialize(array_keys($keys))));
+        $keysSerial = serialize(array_keys($keys));
+        $keyLen = strlen($keysSerial);
+        if ($keyLen <= self::CONFIG_KEY_LEN) {
+            self::$keys->set(md5($areaKey), array(
+                'k' => $keysSerial, 'k1' => '', 'k2' => '', 'k3' => ''
+            ));
+        } else if ($keyLen <= (self::CONFIG_KEY_LEN + self::CONFIG_KEY1_LEN)) {
+            self::$keys->set(md5($areaKey), array(
+                'k' => substr($keysSerial, 0, self::CONFIG_KEY_LEN),
+                'k1' => substr($keysSerial, self::CONFIG_KEY_LEN, $keyLen - self::CONFIG_KEY_LEN),
+                'k2' => '', 'k3' => ''
+            ));
+        } else if ($keyLen <= (self::CONFIG_KEY_LEN + self::CONFIG_KEY1_LEN + self::CONFIG_KEY2_LEN)) {
+            $start = self::CONFIG_KEY_LEN + self::CONFIG_KEY1_LEN;
+            self::$keys->set(md5($areaKey), array(
+                'k' => substr($keysSerial, 0, self::CONFIG_KEY_LEN),
+                'k1' => substr($keysSerial, self::CONFIG_KEY_LEN, self::CONFIG_KEY1_LEN),
+                'k2' => substr($keysSerial, $start, $keyLen - $start),
+                'k3' => ''
+            ));
+        } else {
+            $start = self::CONFIG_KEY_LEN + self::CONFIG_KEY1_LEN;
+            $start3 = $start + self::CONFIG_KEY2_LEN;
+            self::$keys->set(md5($areaKey), array(
+                'k' => substr($keysSerial, 0, self::CONFIG_KEY_LEN),
+                'k1' => substr($keysSerial, self::CONFIG_KEY_LEN, self::CONFIG_KEY1_LEN),
+                'k2' => substr($keysSerial, $start, self::CONFIG_KEY2_LEN),
+                'k3' => substr($keysSerial, $start3, $keyLen - $start3)
+            ));
+        }
+
         foreach ($keys as $key => $val) {
             if (count($val) > 0) {
                 self::writeKeyIntoMemory($areaKey, $val);
@@ -241,7 +283,7 @@ class Manager
             throw new KoveyException("$key is not exists");
         }
 
-        $keys = unserialize($kitem['k']);
+        $keys = unserialize($kitem['k'] . $kitem['k1'] . $kitem['k2'] . $kitem['k3']);
         $vals = array();
         foreach ($keys as $k) {
             $result = self::get($key . '.' . $k);
