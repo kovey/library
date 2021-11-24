@@ -181,7 +181,7 @@ interface ProtocolInterface
      *
      * @return string
      */
-    public static function pack(Array $packet, string $secretKey, string $type = 'aes', bool $isPub = false, string $compress = self::COMPRESS_NO) : string;
+    public static function pack(Array $packet, string $secretKey, string $type = 'aes', bool $isPub = false, int $compress = self::COMPRESS_NO) : string;
 
     /**
      * @description unpack
