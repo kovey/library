@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @description 协议接口
+ * @description rpc protocol interface
  *
  * @package     Protocol
  *
@@ -14,42 +14,63 @@ namespace Kovey\Library\Protocol;
 interface ProtocolInterface
 {
     /**
-     * @description 打包类型
+     * @description gzip compress
+     *
+     * @var string
+     */
+    const COMPRESS_GZIP = 'gzip';
+
+    /**
+     * @description no compress
+     *
+     * @var string
+     */
+    const COMPRESS_NO = 'no';
+
+    /**
+     * @description uncompress max length
+     *
+     * @var string
+     */
+    const COMPRESS_LENGTH = 4194304;
+
+    /**
+     * @description pack type
      *
      * @var string
      */
     const PACK_TYPE = 'N';
 
     /**
-     * @description 包头长度
+     * @description header length
      *
      * @var int
      */
     const HEADER_LENGTH = 4;
 
     /**
-     * @description 包最大长度
+     * @description max length
      *
      * @var int
      */
     const MAX_LENGTH = 2097152;
 
     /**
-     * @description 包长度所在位置
+     * @description length offset
      *
      * @var int
      */
     const LENGTH_OFFSET = 0;
 
     /**
-     * @description 包体开始位置
+     * @description body offset
      *
      * @var int
      */
     const BODY_OFFSET = 4;
 
     /**
-     * @description 构造函数
+     * @description constructor
      *
      * @param string $body
      *
@@ -64,35 +85,35 @@ interface ProtocolInterface
     public function __construct(string $body, string $key, string $type = 'aes', bool $isPub = false);
 
     /**
-     * @description 解析包
+     * @description parse
      *
      * @return bool
      */
     public function parse() : bool;
 
     /**
-     * @description 获取路径
+     * @description get path
      *
      * @return string
      */
     public function getPath() : string;
 
     /**
-     * @description 获取方法
+     * @description get method
      *
      * @return string
      */
     public function getMethod() : string;
 
     /**
-     * @description 获取参数
+     * @description get args
      *
      * @return Array
      */
     public function getArgs() : Array;
 
     /**
-     * @description 获取明文
+     * @description get clear
      *
      * @return string
      */
@@ -113,7 +134,35 @@ interface ProtocolInterface
     public function getFrom() : string;
 
     /**
-     * @description 打包
+     * @description get client language
+     *
+     * @return string
+     */
+    public function getClientLang() : string;
+
+    /**
+     * @description get client version
+     *
+     * @return string
+     */
+    public function getVersion() : string;
+
+    /**
+     * @description get span id
+     *
+     * @return string
+     */
+    public function getSpanId() : string;
+
+    /**
+     * @description get compress
+     *
+     * @return string
+     */
+    public function getCompress() : string;
+
+    /**
+     * @description packet
      *
      * @param Array $packet
      *
@@ -125,10 +174,10 @@ interface ProtocolInterface
      *
      * @return string
      */
-    public static function pack(Array $packet, string $secretKey, string $type = 'aes', bool $isPub = false) : string;
+    public static function pack(Array $packet, string $secretKey, string $type = 'aes', bool $isPub = false, string $compress = self::COMPRESS_NO) : string;
 
     /**
-     * @description 解包
+     * @description unpack
      *
      * @param string $data
      *
@@ -140,5 +189,5 @@ interface ProtocolInterface
      *
      * @return Array
      */
-    public static function unpack(string $data, string $secretKey, string $type = 'aes', bool $isPub = false) : Array;
+    public static function unpack(string $data, string $secretKey, string $type = 'aes', bool $isPub = false, string $compress = self::COMPRESS_NO) : Array;
 }
