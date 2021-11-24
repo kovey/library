@@ -46,7 +46,7 @@ interface ProtocolInterface
      *
      * @var int
      */
-    const HEADER_LENGTH = 4;
+    const HEADER_LENGTH = 8;
 
     /**
      * @description max length
