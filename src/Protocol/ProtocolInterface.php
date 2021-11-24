@@ -166,7 +166,7 @@ interface ProtocolInterface
      *
      * @return string
      */
-    public function getCompress() : string;
+    public function getCompress() : int;
 
     /**
      * @description packet
