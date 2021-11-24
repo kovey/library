@@ -16,16 +16,16 @@ interface ProtocolInterface
     /**
      * @description gzip compress
      *
-     * @var string
+     * @var int
      */
-    const COMPRESS_GZIP = 'gzip';
+    const COMPRESS_GZIP = 1;
 
     /**
      * @description no compress
      *
-     * @var string
+     * @var int
      */
-    const COMPRESS_NO = 'no';
+    const COMPRESS_NO = 0;
 
     /**
      * @description uncompress max length
@@ -46,7 +46,14 @@ interface ProtocolInterface
      *
      * @var int
      */
-    const HEADER_LENGTH = 8;
+    const HEADER_LENGTH = 4;
+
+    /**
+     * @description header length
+     *
+     * @var int
+     */
+    const HEADER_LENGTH_NEW = 8;
 
     /**
      * @description max length
@@ -189,5 +196,5 @@ interface ProtocolInterface
      *
      * @return Array
      */
-    public static function unpack(string $data, string $secretKey, string $type = 'aes', bool $isPub = false, string $compress = self::COMPRESS_NO) : Array;
+    public static function unpack(string $data, string $secretKey, string $type = 'aes', bool $isPub = false) : Array;
 }
