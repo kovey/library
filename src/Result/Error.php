@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @description 接口对外返回值结构
+ * @description error return
  *
  * @package     Library\Result
  *
@@ -14,7 +14,7 @@ namespace Kovey\Library\Result;
 class Error extends Result
 {
     /**
-     * @description 获取结果数据
+     * @description get array
      *
      * @param int $code
      *
@@ -31,7 +31,7 @@ class Error extends Result
     }
 
     /**
-     * @description 获取结果JSON
+     * @description get json
      *
      * @param int $code
      *

@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @description 接口成功时的返回值
+ * @description success return
  *
  * @package     Library\Result
  *
@@ -14,7 +14,7 @@ namespace Kovey\Library\Result;
 class Success extends Result
 {
     /**
-     * @description 获取成功结果数据
+     * @description get array
      *
      * @param Array $data
      *
@@ -27,7 +27,7 @@ class Success extends Result
     }
 
     /**
-     * @description 获取成功结果数据JSON
+     * @description get json
      *
      * @param Array $data
      *

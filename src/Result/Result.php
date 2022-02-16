@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @description 接口返回值基类
+ * @description return with interface
  *
  * @package     Library\Result
  *
@@ -16,35 +16,35 @@ use Kovey\Library\Util\Json;
 abstract class Result
 {
     /**
-     * @description 错误码
+     * @description error code
      *
      * @var int
      */
     protected int $code;
 
     /**
-     * @description 错误消息
+     * @description error msg
      *
      * @var string
      */
     protected string $msg;
 
     /**
-     * @description 返回数据
+     * @description return data
      *
      * @var Array
      */
     protected Array | \ArrayObject $data;
 
     /**
-     * @description 是否开发模式
+     * @description is dev
      *
      * @var bool
      */
     protected bool $isDev;
 
     /**
-     * @description 构造结果
+     * @description construct result
      *
      * @param int $code
      *
@@ -63,7 +63,7 @@ abstract class Result
     }
 
     /**
-     * @description 转为数组
+     * @description to array
      *
      * @return Array
      */
@@ -77,7 +77,7 @@ abstract class Result
     }
 
     /**
-     * @description 转为JSON
+     * @description to json
      *
      * @return string
      */

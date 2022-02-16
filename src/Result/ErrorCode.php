@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @description 错误代码定义
+ * @description error code
  *
  * @package     Library\Result
  *
