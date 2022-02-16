@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @description config manager
+ * @description config manager, parse json file
  *
  * @package     Config
  *
@@ -13,6 +13,7 @@ namespace Kovey\Library\Config;
 
 use Swoole\Coroutine\System;
 use Kovey\Library\Exception\KoveyException;
+use Kovey\Library\Util\Json;
 
 class Manager
 {
@@ -36,6 +37,8 @@ class Manager
      * @var string
      */
     private static string $path;
+
+    const EMPTY_VALUE = 'kovey_array_empty';
 
     const CONFIG_KEY_LEN = 256;
 
@@ -79,8 +82,8 @@ class Manager
     {
         $files = scandir(self::$path);
         foreach ($files as $file) {
-            $suffix = substr($file, -3);
-            if ($suffix === false || strtolower($suffix) !== 'ini') {
+            $suffix = substr($file, -4);
+            if ($suffix === false || strtolower($suffix) !== 'json') {
                 continue;
             }
 
@@ -90,7 +93,12 @@ class Manager
                 continue;
             }
 
-            self::writeIntoMemory(str_replace('.ini', '', $file), $content);
+            try {
+                $config = Json::decode($content);
+                self::writeIntoMemory(str_replace('.json', '', $file), $config);
+            } catch (\Throwable $e) {
+                continue;
+            }
         }
     }
 
@@ -104,8 +112,8 @@ class Manager
         go (function () {
             $files = scandir(self::$path);
             foreach ($files as $file) {
-                $suffix = substr($file, -3);
-                if ($suffix === false || strtolower($suffix) !== 'ini') {
+                $suffix = substr($file, -4);
+                if ($suffix === false || strtolower($suffix) !== 'json') {
                     continue;
                 }
 
@@ -115,7 +123,12 @@ class Manager
                     continue;
                 }
 
-                self::writeIntoMemory(str_replace('.ini', '', $file), $content);
+                try {
+                    $config = Json::decode($content);
+                    self::writeIntoMemory(str_replace('.json', '', $file), $config);
+                } catch (\Throwable $e) {
+                    continue;
+                }
             }
         });
     }
@@ -129,69 +142,28 @@ class Manager
      *
      * @return void
      */
-    private static function writeIntoMemory(string $file, string $content) : void
+    private static function writeIntoMemory(string $file, Array $config) : void
     {
-        $contents = explode("\n", $content);
-        $areaKey = '';
-        $areaKeys = array();
-        foreach ($contents as $oneLine) {
-            $oneLine = trim($oneLine);
-            $first = substr($oneLine, 0, 1);
-            if ($first === ';'
-                || $first === '#'
-            ) {
-                continue;
-            }
-
-            // area begin
-            if (preg_match('/\[/', $oneLine, $match)) {
-                $areaKey = str_replace(array('[',']'), '', $oneLine);
-                continue;
-            }
-
-            $info = explode('=', $oneLine);
-            if (count($info) < 2) {
-                continue;
-            }
-
-            $key = trim($info[0]);
-            if ($key === '') {
-                continue;
-            }
-
-            $val = trim(self::getValue($info, '=', 1), '"');
-            $finalKey = $file . '.' . $areaKey . '.' . $key;
-            self::$values->set(md5($finalKey), array('v' => $val));
-            $areaKeys[] = $finalKey;
+        if (empty($config)) {
+            return;
         }
 
-        self::writeKeyIntoMemory('', $areaKeys);
-    }
+        self::writeKeyIntoMemory($file, array_keys($config));
 
-    /**
-     * @description get config value
-     *
-     * @param Array $info
-     *
-     * @param string $split
-     *
-     * @param int $index
-     *
-     * @return string
-     */
-    private static function getValue(Array $info, string $split, int $index) : string
-    {
-        $len = count($info);
-        if ($len == $index + 1) {
-            return trim($info[$index]);
+        foreach ($config as $key => $configs) {
+            $finalKey = $file . '.' . trim($key);
+            if (!is_array($configs)) {
+                self::$values->set(md5($finalKey), array('v' => $configs));
+                continue;
+            }
+
+            if (empty($configs)) {
+                self::$values->set(md5($finalKey), array('v' => self::EMPTY_VALUE));
+                continue;
+            }
+
+            self::writeIntoMemory($finalKey, $configs);
         }
-
-        $result = '';
-        for ($i = $index; $i < $len - 1; $i ++) {
-            $result .= $info[$i] . $split;
-        }
-
-        return trim($result . $info[$len - 1]);
     }
 
     /**
@@ -203,42 +175,23 @@ class Manager
      *
      * @return void
      */
-    private static function writeKeyIntoMemory(string $pref, Array $areaKeys) : void
+    private static function writeKeyIntoMemory(string $pref, Array $keys) : void
     {
-        $keys = array();
-        $areaKey = '';
-        foreach ($areaKeys as $subKey) {
-            $info = explode('.', $subKey);
-            if (count($info) < 2) {
-                continue;
-            }
-
-            $areaKey = $info[0];
-            $key = $info[1];
-            if (!isset($keys[$key])) {
-                $keys[$key] = array();
-            }
-
-            if (count($info) > 2) {
-                $keys[$key][] = self::getValue($info, '.', 1);
-            }
-        }
-        $areaKey = $pref === '' ? $areaKey : $pref . '.' . $areaKey;
-        $keysSerial = serialize(array_keys($keys));
+        $keysSerial = serialize($keys);
         $keyLen = strlen($keysSerial);
         if ($keyLen <= self::CONFIG_KEY_LEN) {
-            self::$keys->set(md5($areaKey), array(
+            self::$keys->set(md5($pref), array(
                 'k' => $keysSerial, 'k1' => '', 'k2' => '', 'k3' => ''
             ));
         } else if ($keyLen <= (self::CONFIG_KEY_LEN + self::CONFIG_KEY1_LEN)) {
-            self::$keys->set(md5($areaKey), array(
+            self::$keys->set(md5($pref), array(
                 'k' => substr($keysSerial, 0, self::CONFIG_KEY_LEN),
                 'k1' => substr($keysSerial, self::CONFIG_KEY_LEN, $keyLen - self::CONFIG_KEY_LEN),
                 'k2' => '', 'k3' => ''
             ));
         } else if ($keyLen <= (self::CONFIG_KEY_LEN + self::CONFIG_KEY1_LEN + self::CONFIG_KEY2_LEN)) {
             $start = self::CONFIG_KEY_LEN + self::CONFIG_KEY1_LEN;
-            self::$keys->set(md5($areaKey), array(
+            self::$keys->set(md5($pref), array(
                 'k' => substr($keysSerial, 0, self::CONFIG_KEY_LEN),
                 'k1' => substr($keysSerial, self::CONFIG_KEY_LEN, self::CONFIG_KEY1_LEN),
                 'k2' => substr($keysSerial, $start, $keyLen - $start),
@@ -247,18 +200,12 @@ class Manager
         } else {
             $start = self::CONFIG_KEY_LEN + self::CONFIG_KEY1_LEN;
             $start3 = $start + self::CONFIG_KEY2_LEN;
-            self::$keys->set(md5($areaKey), array(
+            self::$keys->set(md5($pref), array(
                 'k' => substr($keysSerial, 0, self::CONFIG_KEY_LEN),
                 'k1' => substr($keysSerial, self::CONFIG_KEY_LEN, self::CONFIG_KEY1_LEN),
                 'k2' => substr($keysSerial, $start, self::CONFIG_KEY2_LEN),
                 'k3' => substr($keysSerial, $start3, $keyLen - $start3)
             ));
-        }
-
-        foreach ($keys as $key => $val) {
-            if (count($val) > 0) {
-                self::writeKeyIntoMemory($areaKey, $val);
-            }
         }
     }
 
@@ -275,7 +222,7 @@ class Manager
     {
         $val = self::$values->get(md5($key));
         if ($val !== false) {
-            return $val['v'];
+            return $val['v'] === self::EMPTY_VALUE ? array() : $val['v'];
         }
 
         $kitem = self::$keys->get(md5($key));

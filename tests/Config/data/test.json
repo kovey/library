@@ -1,0 +1,11 @@
+{
+    "name": "kovey",
+    "config": ["1", "2", "a"],
+    "map": {
+        "test": {
+            "aa": "bb"
+        }, 
+        "env": "On"
+    },
+    "bool": true
+}

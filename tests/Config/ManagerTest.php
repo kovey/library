@@ -19,24 +19,17 @@ class ManagerTest extends TestCase
     public function testGet()
     {
         Manager::init(__DIR__ . '/data');
-        $this->assertEquals('d', Manager::get('test.manager.b'));
+        $this->assertEquals('kovey', Manager::get('test.name'));
         $this->assertEquals(array(
-            'manager' => array(
-                'a' => 1,
-                'b' => 'd',
-                'c' => 'f'
-            ),
-            'arr' => array(1, 2),
-            'more' => array(
-                array(
-                    'test' => 1,
-                    'manager' => 2
+            'name' => 'kovey',
+            'config' => array('1', '2', 'a'),
+            'map' => array(
+                'test' => array(
+                    'aa' => "bb"
                 ),
-                array(
-                    'test' => 11,
-                    'manager' => 12
-                )
-            )
+                'env' => 'On'
+            ),
+            'bool' => true
         ), Manager::get('test'));
     }
 
