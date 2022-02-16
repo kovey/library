@@ -1,6 +1,6 @@
 <?php
 /**
- * @description 数据加解密
+ * @description encrypt data
  *
  * @package Kovey\Library\Encryption
  *
@@ -17,7 +17,7 @@ use Kovey\Library\Jwt\Aes;
 class Encryption
 {
     /**
-     * @description 加密
+     * @description encrypt
      *
      * @param string $data
      *
@@ -53,7 +53,7 @@ class Encryption
     }
 
     /**
-     * @description 解密
+     * @description decrypt
      *
      * @param string $data
      *

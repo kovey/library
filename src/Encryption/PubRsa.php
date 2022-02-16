@@ -1,6 +1,6 @@
 <?php
 /**
- * @description RSA 公钥加解密
+ * @description RSA public encrypt
  *
  * @package Kovey\Library\Encryption
  *
@@ -16,7 +16,7 @@ use Kovey\Library\Exception\KoveyException;
 class PubRsa
 {
     /**
-     * @description 加密
+     * @description encrypt
      *
      * @param string $data
      *
@@ -52,7 +52,7 @@ class PubRsa
     }
 
     /**
-     * @description 解密
+     * @description decrypt
      *
      * @param string $encrypt
      *

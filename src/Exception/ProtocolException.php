@@ -14,7 +14,7 @@ namespace Kovey\Library\Exception;
 class ProtocolException extends KoveyException
 {
     /**
-     * @description 错误类型
+     * @description error type
      *
      * @var string
      */
@@ -28,7 +28,7 @@ class ProtocolException extends KoveyException
     private string $traceString;
 
     /**
-     * @description 构造函数
+     * @description construct
      *
      * @param string $msg
      *
@@ -47,7 +47,7 @@ class ProtocolException extends KoveyException
     }
 
     /**
-     * @description 获取错误类型
+     * @description get error type
      *
      * @return string
      */

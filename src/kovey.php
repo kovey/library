@@ -1,7 +1,7 @@
 <?php
 /**
  *
- * @description kovey framework 入口文件，请勿更改
+ * @description kovey framework entry
  *
  * @package     Kovey
  *
@@ -11,8 +11,8 @@
  */
 if (!extension_loaded('swoole')) {
     echo PHP_EOL . 'swoole extension not install!' . PHP_EOL
-        . 'kovey framwork base on swoole 4.4.x!' . PHP_EOL
-        . 'please install swoole-4.4.x first!' . PHP_EOL;
+        . 'kovey framwork base on swoole 4.8.x!' . PHP_EOL
+        . 'please install swoole-4.8.x first!' . PHP_EOL;
     exit;
 }
 

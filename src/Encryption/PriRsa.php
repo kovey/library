@@ -1,6 +1,6 @@
 <?php
 /**
- * @description RSA 私钥解密
+ * @description RSA private encrypt
  *
  * @package Kovey\Library\Encryption
  *
@@ -16,7 +16,7 @@ use Kovey\Library\Exception\KoveyException;
 class PriRsa
 {
     /**
-     * @description 加密
+     * @description encrypt
      *
      * @param string $data
      *
@@ -52,7 +52,7 @@ class PriRsa
     }
 
     /**
-     * @description 解密
+     * @description decrypt
      *
      * @param string $encrypt
      *

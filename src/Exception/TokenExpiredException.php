@@ -1,6 +1,6 @@
 <?php
 /**
- * @description token 过期异常
+ * @description token expire exception
  *
  * @package Library\Exception
  *

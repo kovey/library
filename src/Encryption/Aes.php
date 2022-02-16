@@ -1,6 +1,6 @@
 <?php
 /**
- * @description AES加密
+ * @description AES encrypt
  *
  * @package Kovey\Library\Encryption
  *
@@ -16,7 +16,7 @@ use Kovey\Library\Exception\KoveyException;
 class Aes
 {
     /**
-     * @description 加密
+     * @description encrypt
      *
      * @param string $data
      *
@@ -48,7 +48,7 @@ class Aes
     }
 
     /**
-     * @description 解密
+     * @description decrypt
      *
      * @param string $encrypt
      *
